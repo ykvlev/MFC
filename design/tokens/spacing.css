@@ -1,0 +1,11 @@
+/* Layout. The brandbook is authored on a 1920×1080 canvas with a
+   34px page margin; posters use a 413.106px square module grid. */
+:root{
+  --space-1:4px;--space-2:8px;--space-3:10px;--space-4:16px;--space-5:20px;
+  --space-6:23px;--space-7:32px;--space-8:34px;--space-9:48px;--space-10:64px;
+  --page-margin:34px;
+  --slide-w:1920px;
+  --slide-h:1080px;
+  --module:413.106px;      /* poster square module */
+  --gutter:20px;
+}

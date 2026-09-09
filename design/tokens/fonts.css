@@ -1,0 +1,22 @@
+/* РСО brand webfonts. Source: files supplied with the 2025 brandbook. */
+@font-face{font-family:"Stolzl";src:url("../assets/fonts/Stolzl-Thin.otf") format("opentype");font-weight:100;font-style:normal;font-display:swap}
+@font-face{font-family:"Stolzl";src:url("../assets/fonts/Stolzl-Light.otf") format("opentype");font-weight:300;font-style:normal;font-display:swap}
+@font-face{font-family:"Stolzl";src:url("../assets/fonts/Stolzl-Book.otf") format("opentype");font-weight:350;font-style:normal;font-display:swap}
+@font-face{font-family:"Stolzl";src:url("../assets/fonts/Stolzl-Regular.otf") format("opentype");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Stolzl";src:url("../assets/fonts/Stolzl-Medium.otf") format("opentype");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"Stolzl";src:url("../assets/fonts/Stolzl-Bold.otf") format("opentype");font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:"Actay Wide";src:url("../assets/fonts/ActayWide-Bold.otf") format("opentype");font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:"Actay Wide";src:url("../assets/fonts/ActayWide-BoldItalic.otf") format("opentype");font-weight:700;font-style:italic;font-display:swap}
+@font-face{font-family:"Actay";src:url("../assets/fonts/Actay-Bold.otf") format("opentype");font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:"Actay";src:url("../assets/fonts/Actay-BoldItalic.otf") format("opentype");font-weight:700;font-style:italic;font-display:swap}
+@font-face{font-family:"Actay Condensed";src:url("../assets/fonts/ActayCondensed-Thin.otf") format("opentype");font-weight:100;font-style:normal;font-display:swap}
+@font-face{font-family:"Actay Condensed";src:url("../assets/fonts/ActayCondensed-ThinItalic.otf") format("opentype");font-weight:100;font-style:italic;font-display:swap}
+@font-face{font-family:"Onest";src:url("../assets/fonts/Onest-Thin.ttf") format("truetype");font-weight:100;font-style:normal;font-display:swap}
+@font-face{font-family:"Onest";src:url("../assets/fonts/Onest-ExtraLight.ttf") format("truetype");font-weight:200;font-style:normal;font-display:swap}
+@font-face{font-family:"Onest";src:url("../assets/fonts/Onest-Light.ttf") format("truetype");font-weight:300;font-style:normal;font-display:swap}
+@font-face{font-family:"Onest";src:url("../assets/fonts/Onest-Regular.ttf") format("truetype");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Onest";src:url("../assets/fonts/Onest-Medium.ttf") format("truetype");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"Onest";src:url("../assets/fonts/Onest-SemiBold.ttf") format("truetype");font-weight:600;font-style:normal;font-display:swap}
+@font-face{font-family:"Onest";src:url("../assets/fonts/Onest-Bold.ttf") format("truetype");font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:"Onest";src:url("../assets/fonts/Onest-ExtraBold.ttf") format("truetype");font-weight:800;font-style:normal;font-display:swap}
+@font-face{font-family:"Onest";src:url("../assets/fonts/Onest-Black.ttf") format("truetype");font-weight:900;font-style:normal;font-display:swap}

@@ -1,0 +1,45 @@
+/* Палитры направлений. Each РСО направление owns one hue: a digital
+   base, a light tint and a print-strong value. Use a direction palette
+   only when the core palette is not appropriate for the material. */
+:root{
+  /* ССО — строительные отряды — «на стройке» */
+  --dir-sso:#0453FF;        /* digital · CMYK 100 60 0 0 */
+  --dir-sso-tint:#E1E0FF;   /* light · CMYK 9 10 0 0 */
+  --dir-sso-print:#0040CB; /* print · CMYK 100 70 20 5 */
+  /* СПО — педагогические отряды — «в лагере» */
+  --dir-spo:#4CACF7;        /* digital · CMYK 60 21 0 0 */
+  --dir-spo-tint:#D4ECFF;   /* light · CMYK 15 2 0 0 */
+  --dir-spo-print:#008FFF; /* print · CMYK 73 41 0 0 */
+  /* СМО — медицинские отряды — «в медицине» */
+  --dir-smo:#00DFF2;        /* digital · CMYK 59 0 11 0 */
+  --dir-smo-tint:#D9FCFF;   /* light · CMYK 12 0 2 0 */
+  --dir-smo-print:#00C5D6; /* print · CMYK 68 0 18 0 */
+  /* ССервО — сервисные отряды — «в сервисе» */
+  --dir-sservo:#6DC185;        /* digital · CMYK 59 0 64 0 */
+  --dir-sservo-tint:#DCFFE6;   /* light · CMYK 12 0 13 0 */
+  --dir-sservo-print:#469E5F; /* print · CMYK 75 15 82 0 */
+  /* СПрО — производственные отряды — «на производстве» */
+  --dir-spro:#FF794C;        /* digital · CMYK 0 66 73 0 */
+  --dir-spro-tint:#FFDFD4;   /* light · CMYK 0 14 12 0 */
+  --dir-spro-print:#FF4C0F; /* print · CMYK 0 85 100 0 */
+  /* СОП — отряды проводников — «в поезде» */
+  --dir-sop:#FE4734;        /* digital · CMYK 0 86 84 0 */
+  --dir-sop-tint:#FFE5E3;   /* light · CMYK 0 12 6 0 */
+  --dir-sop-print:#E61F25; /* print · CMYK 3 100 100 0 */
+  /* ССХО — сельскохозяйственные отряды — «в агрокомплексе» */
+  --dir-ssxo:#FE9633;        /* digital · CMYK 0 49 88 0 */
+  --dir-ssxo-tint:#FFDEBF;   /* light · CMYK 0 14 24 0 */
+  --dir-ssxo-print:#FB7A00; /* print · CMYK 0 64 100 0 */
+  /* ТОП — трудовые отряды подростков — «в отряде подростков» */
+  --dir-top:#8043F9;        /* digital · CMYK 67 74 0 0 */
+  --dir-top-tint:#E8DDFF;   /* light · CMYK 7 13 0 0 */
+  --dir-top-print:#6601E9; /* print · CMYK 75 81 0 0 */
+}
+[data-direction="sso"]{--direction:var(--dir-sso);--direction-tint:var(--dir-sso-tint);--direction-print:var(--dir-sso-print)}
+[data-direction="spo"]{--direction:var(--dir-spo);--direction-tint:var(--dir-spo-tint);--direction-print:var(--dir-spo-print)}
+[data-direction="smo"]{--direction:var(--dir-smo);--direction-tint:var(--dir-smo-tint);--direction-print:var(--dir-smo-print)}
+[data-direction="sservo"]{--direction:var(--dir-sservo);--direction-tint:var(--dir-sservo-tint);--direction-print:var(--dir-sservo-print)}
+[data-direction="spro"]{--direction:var(--dir-spro);--direction-tint:var(--dir-spro-tint);--direction-print:var(--dir-spro-print)}
+[data-direction="sop"]{--direction:var(--dir-sop);--direction-tint:var(--dir-sop-tint);--direction-print:var(--dir-sop-print)}
+[data-direction="ssxo"]{--direction:var(--dir-ssxo);--direction-tint:var(--dir-ssxo-tint);--direction-print:var(--dir-ssxo-print)}
+[data-direction="top"]{--direction:var(--dir-top);--direction-tint:var(--dir-top-tint);--direction-print:var(--dir-top-print)}

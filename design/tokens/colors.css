@@ -1,0 +1,44 @@
+/* Core palette — brandbook "цвета" (HEX / RGB / CMYK / Pantone).
+   Only these four are the base identity; direction palettes below are
+   for materials of a specific РСО направление. Any other colour needs
+   PR РСО sign-off. */
+:root{
+  --rso-blue:#0804FF;            /* RGB 8 4 255 · CMYK 100 75 0 0 · Pantone Blue 072 C */
+  --rso-white:#FFFFFF;           /* CMYK 0 0 0 0 · Pantone P 179-1 C */
+  --rso-grey:#EEEEEE;            /* RGB 238 238 238 · CMYK 8 5 7 0 · Pantone P 134-9 U */
+  --rso-black:#000000;           /* CMYK 0 0 0 100 · Pantone Black C */
+
+  /* Blues used across the book alongside the core blue */
+  --rso-blue-bright:#5552FF;
+  --rso-blue-poster:#0453FF;
+  --rso-blue-deep:#0040CB;
+  --rso-blue-tint:#E1E0FF;
+  --rso-blue-ink:#1C274C;
+
+  /* Neutrals lifted from the brandbook slide furniture */
+  --rso-surface:#FFFFFF;
+  --rso-surface-muted:#F5F5F5;
+  --rso-surface-footer:#F9F9F9;
+  --rso-surface-grey:#F4F4F4;
+  --rso-border:#CCCCCC;
+  --rso-border-soft:#C5C5C5;
+  --rso-border-faint:#E0E0E0;
+  --rso-hairline:#A8A8A8;
+  --rso-text-muted:#818C99;
+  --rso-text-dim:#99A2AD;
+  --rso-alert:#F23838;
+  --rso-alert-strong:#E61F25;
+
+  /* Semantic aliases */
+  --text-primary:var(--rso-black);
+  --text-inverse:var(--rso-white);
+  --text-secondary:var(--rso-text-muted);
+  --text-accent:var(--rso-blue);
+  --surface-page:var(--rso-white);
+  --surface-card:var(--rso-white);
+  --surface-section:var(--rso-surface-muted);
+  --surface-brand:var(--rso-blue);
+  --border-card:var(--rso-border);
+  --link:var(--rso-blue);
+  --link-hover:var(--rso-blue-bright);
+}

@@ -1,0 +1,22 @@
+/* Radii, borders, shadows, motion. The book uses hairline inset
+   strokes rather than drop shadows — cards are outlined, never lifted. */
+:root{
+  --radius-sm:6.667px;
+  --radius-md:16px;
+  --radius-lg:20px;
+  --radius-xl:32px;
+  --radius-pill:999px;
+  --radius-circle:50%;
+
+  --stroke-card:inset 0 0 0 1px var(--rso-border);
+  --stroke-card-soft:inset 0 0 0 1px var(--rso-border-soft);
+  --stroke-poster:inset 0 0 0 1.599px var(--rso-border-faint);
+
+  --scrim:linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)); /* @kind other */
+
+  --ease:cubic-bezier(0.22,0.61,0.36,1); /* @kind other */
+  --dur-fast:120ms; /* @kind other */
+  --dur:200ms; /* @kind other */
+}
+a{color:var(--link);text-decoration:none}
+a:hover{color:var(--link-hover);text-decoration:underline}

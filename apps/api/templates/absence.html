@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      @page { size: A4; margin: 20mm; }
+      body { font-family: 'DejaVu Sans', 'Onest', sans-serif; font-size: 12pt; color: #000; }
+      h1 { font-size: 16pt; text-align: center; margin-bottom: 24px; }
+      .row { margin: 6px 0; }
+      .label { color: #555; }
+      .approvals { margin-top: 24px; }
+      .approvals li { margin: 4px 0; }
+      .sign { margin-top: 48px; display: flex; justify-content: space-between; }
+    </style>
+  </head>
+  <body>
+    <h1>Заявление на освобождение от занятий</h1>
+    <div class="row"><span class="label">Заявление №</span> {{application_number}} от {{created_at}}</div>
+    <div class="row"><span class="label">ФИО:</span> {{full_name}}</div>
+    <div class="row"><span class="label">Группа:</span> {{group_name}}, {{course}} курс</div>
+    <div class="row"><span class="label">Студенческий билет:</span> {{student_card_no}}</div>
+    <div class="row"><span class="label">Период освобождения:</span> {{data.period}}</div>
+    <div class="row"><span class="label">Основание:</span> {{data.reason}}</div>
+    <div class="row"><span class="label">Комментарий:</span> {{data.comment}}</div>
+
+    <div class="approvals">
+      <div class="label">Согласовано:</div>
+      <ul>
+        {{approvals}}
+      </ul>
+    </div>
+
+    <div class="sign">
+      <div>Подпись студента: __________________</div>
+      <div>Заведующий отделением: __________________</div>
+    </div>
+  </body>
+</html>

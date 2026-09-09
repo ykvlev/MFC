@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="stylesheet" href="_ds/design-system-66e89ea0-473d-473b-849c-a219b14c0ee8/tokens/fonts.css">
+<link rel="stylesheet" href="_ds/design-system-66e89ea0-473d-473b-849c-a219b14c0ee8/tokens/colors.css">
+<link rel="stylesheet" href="_ds/design-system-66e89ea0-473d-473b-849c-a219b14c0ee8/tokens/typography.css">
+<link rel="stylesheet" href="_ds/design-system-66e89ea0-473d-473b-849c-a219b14c0ee8/tokens/spacing.css">
+<link rel="stylesheet" href="_ds/design-system-66e89ea0-473d-473b-849c-a219b14c0ee8/tokens/effects.css">
+<link rel="stylesheet" href="_ds/design-system-66e89ea0-473d-473b-849c-a219b14c0ee8/styles.css">
+<script src="_ds/design-system-66e89ea0-473d-473b-849c-a219b14c0ee8/_ds_bundle.js"></script>
+<style>
+  body { margin:0; background:#EEEEEE; }
+  a, a:visited { color:#0804FF; text-decoration:none; }
+  a:hover { color:#5552FF; }
+  @keyframes sk { 0%,100%{opacity:.55} 50%{opacity:1} }
+  input, textarea, button { font-family:'Onest', system-ui; }
+  input:focus, textarea:focus { outline:none; border-color:#0804FF !important; }
+  ::-webkit-scrollbar { width:0; height:0; }
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:#EEEEEE;padding:40px 24px 64px;display:flex;flex-direction:column;align-items:center;gap:28px;font-family:'Onest', system-ui;color:#000">
+
+  <div style="width:100%;max-width:900px;display:flex;flex-direction:column;gap:14px">
+    <div style="font-family:'Stolzl', system-ui;font-weight:500;font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:#818C99">прототип мобильного клиента</div>
+    <div style="font-family:'Actay Wide', 'Stolzl', system-ui;font-weight:700;font-size:40px;line-height:.94;color:#0804FF">единое окно студента</div>
+    <div style="font-size:15px;line-height:1.5;max-width:620px;color:#000">Один движок заявок, семь настраиваемых типов, маршруты согласования, ячейки выдачи и брони. Экраны кликабельны, состояния живые: подача заявки в роли студента появится в очереди сотрудника, а выданный код — на экране ячейки.</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px">
+      <sc-for list="{{ roleTabs }}" as="r" hint-placeholder-count="4">
+        <button type="button" onClick="{{ r.onPick }}" style="font-family:'Stolzl', system-ui;font-weight:500;font-size:13px;letter-spacing:.04em;text-transform:uppercase;padding:10px 16px;border-radius:20px;cursor:pointer;transition:opacity 160ms cubic-bezier(.22,.61,.36,1);border:1px solid {{ r.bd }};background:{{ r.bg }};color:{{ r.fg }}">{{ r.label }}</button>
+      </sc-for>
+    </div>
+  </div>
+
+  <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+    <div style="height:100%;display:flex;flex-direction:column;background:#FFFFFF;overflow:hidden;font-family:'Onest', system-ui">
+
+      <sc-if value="{{ isLogin }}" hint-placeholder-val="{{ true }}">
+        <div style="height:100%;background:#0804FF;color:#fff;display:flex;flex-direction:column;justify-content:space-between;padding:96px 28px 44px;box-sizing:border-box">
+          <div style="display:flex;flex-direction:column;gap:20px">
+            <div style="font-family:'Stolzl', system-ui;font-weight:500;font-size:12px;letter-spacing:.14em;text-transform:uppercase;opacity:.8">информационная система вуза</div>
+            <div style="font-family:'Actay Wide', system-ui;font-weight:700;font-size:36px;line-height:.92;text-transform:lowercase">единое окно студента</div>
+            <div style="font-size:15px;line-height:1.5;max-width:280px;opacity:.9">Заявления без обхода кабинетов. Выберите роль, чтобы войти в демонстрационный контур.</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <sc-for list="{{ loginRoles }}" as="r" hint-placeholder-count="4">
+              <button type="button" onClick="{{ r.onPick }}" style="width:100%;text-align:left;padding:16px 18px;border-radius:20px;border:1px solid rgba(255,255,255,.45);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;display:flex;flex-direction:column;gap:3px" style-hover="background:rgba(255,255,255,.16)">
+                <span style="font-family:'Stolzl', system-ui;font-weight:500;font-size:17px">{{ r.label }}</span>
+                <span style="font-size:13px;opacity:.75">{{ r.email }}</span>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ authed }}" hint-placeholder-val="{{ false }}">
+        <div style="height:100%;display:flex;flex-direction:column;min-height:0">
+
+          <div style="padding:58px 20px 12px;border-bottom:1px solid #EEEEEE;display:flex;align-items:flex-end;gap:12px;flex-shrink:0">
+            <sc-if value="{{ hdrBack }}" hint-placeholder-val="{{ false }}">
+              <button type="button" onClick="{{ onBack }}" aria-label="Назад" style="width:36px;height:36px;flex-shrink:0;border-radius:16px;border:1px solid #CCCCCC;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0">
+                <svg width="10" height="16" viewBox="0 0 10 16"><path d="M8 1L2 8l6 7" stroke="#000" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+              </button>
+            </sc-if>
+            <div style="flex:1;min-width:0">
+              <div style="font-family:'Stolzl', system-ui;font-weight:500;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#818C99">{{ hdrKicker }}</div>
+              <div style="font-family:'Stolzl', system-ui;font-weight:500;font-size:26px;line-height:1.1;letter-spacing:-.01em">{{ hdrTitle }}</div>
+            </div>
+            <sc-if value="{{ hdrBell }}" hint-placeholder-val="{{ false }}">
+              <button type="button" onClick="{{ onBell }}" aria-label="Уведомления" style="width:36px;height:36px;flex-shrink:0;border-radius:16px;border:1px solid #CCCCCC;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;position:relative;padding:0">
+                <svg width="16" height="18" viewBox="0 0 16 18"><path d="M8 1a5 5 0 00-5 5v4L1.5 13h13L13 10V6a5 5 0 00-5-5z" fill="none" stroke="#000" stroke-width="1.6" stroke-linejoin="round"></path><path d="M6 15a2 2 0 004 0" fill="none" stroke="#000" stroke-width="1.6"></path></svg>
+                <sc-if value="{{ hasUnread }}" hint-placeholder-val="{{ false }}">
+                  <span style="position:absolute;top:5px;right:5px;width:8px;height:8px;border-radius:50%;background:#F23838;border:1.5px solid #fff"></span>
+                </sc-if>
+              </button>
+            </sc-if>
+          </div>
+
+          <div style="flex:1;min-height:0;overflow:auto;background:{{ pageBg }}">
+
+            <sc-if value="{{ isLoading }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:16px 20px;display:flex;flex-direction:column;gap:12px">
+                <sc-for list="{{ skeletons }}" as="s" hint-placeholder-count="3">
+                  <div style="border:1px solid #EEEEEE;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:10px;animation:sk 1.2s ease-in-out infinite;background:#fff">
+                    <div style="height:11px;width:38%;background:#EEEEEE;border-radius:6px"></div>
+                    <div style="height:19px;width:80%;background:#EEEEEE;border-radius:6px"></div>
+                    <div style="height:11px;width:56%;background:#F5F5F5;border-radius:6px"></div>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isList }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:16px 20px 24px;display:flex;flex-direction:column;gap:12px">
+                <sc-if value="{{ listEmpty }}" hint-placeholder-val="{{ false }}">
+                  <div style="border:1px dashed #A8A8A8;border-radius:32px;padding:36px 24px;text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center">
+                    <div style="width:56px;height:56px;border-radius:20px;background:#E1E0FF;display:flex;align-items:center;justify-content:center">
+                      <svg width="22" height="26" viewBox="0 0 22 26"><path d="M3 1h11l7 7v17H3z" fill="none" stroke="#0804FF" stroke-width="1.8"></path><path d="M14 1v7h7" fill="none" stroke="#0804FF" stroke-width="1.8"></path></svg>
+                    </div>
+                    <div style="font-family:'Stolzl', system-ui;font-weight:500;font-size:19px">{{ emptyTitle }}</div>
+                    <div style="font-size:14px;color:#818C99;line-height:1.5;max-width:250px">{{ emptyText }}</div>
+                    <sc-if value="{{ emptyCta }}" hint-placeholder-val="{{ false }}">
+                      <button type="button" onClick="{{ onEmptyCta }}" style="margin-top:6px;padding:13px 22px;border-radius:20px;border:none;background:#0804FF;color:#fff;font-family:'Stolzl', system-ui;font-weight:500;font-size:15px;cursor:pointer">{{ emptyCta }}</button>
+                    </sc-if>
+                  </div>
+                </sc-if>
+                <sc-for list="{{ listItems }}" as="it" hint-placeholder-count="3">
+                  <button type="button" onClick="{{ it.onOpen }}" style="text-align:left;border:1px solid #CCCCCC;border-radius:20px;padding:16px;background:#fff;cursor:pointer;display:flex;flex-direction:column;gap:9px;transition:background 160ms cubic-bezier(.22,.61,.36,1)" style-hover="background:#F5F5F5">
+                    <div style="display:flex;align-items:center;gap:8px;justify-content:space-between">
+                      <span style="font-family:'Stolzl', system-ui;font-weight:400;font-size:11px;letter-spacing:.08em;color:#818C99">{{ it.meta }}</span>
+                      <span style="font-family:'Stolzl', system-ui;font-weight:500;font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:5px 9px;border-radius:20px;white-space:nowrap;background:{{ it.badgeBg }};color:{{ it.badgeFg }}">{{ it.badge }}</span>
+                    </div>
+                    <div style="font-family:'Stolzl', system-ui;font-weight:500;font-size:18px;line-height:1.2">{{ it.title }}</div>
+                    <div style="font-size:13px;color:#818C99;line-height:1.45">{{ it.sub }}</div>
+                    <sc-if value="{{ it.progress }}" hint-placeholder-val="{{ true }}">
+                      <div style="display:flex;gap:4px;width:100%;margin-top:2px">
+                        <sc-for list="{{ it.bars }}" as="b" hint-placeholder-count="3">
+                          <span style="flex:1;height:4px;border-radius:2px;background:{{ b.color }}"></span>
+                        </sc-for>
+                      </div>
+                    </sc-if>
+                  </button>
+                </sc-for>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isCatalog }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:16px 20px 24px;display:flex;flex-direction:column;gap:12px">
+                <sc-for list="{{ catalog }}" as="t" hint-placeholder-count="7">
+                  <button type="button" onClick="{{ t.onOpen }}" style="text-align:left;border:1px solid #CCCCCC;border-radius:20px;padding:16px;background:#fff;cursor:pointer;display:flex;gap:14px;align-items:flex-start;transition:background 160ms cubic-bezier(.22,.61,.36,1)" style-hover="background:#F5F5F5">
+                    <span style="width:40px;height:40px;flex-shrink:0;border-radius:16px;display:flex;align-items:center;justify-content:center;font-family:'Stolzl', system-ui;font-weight:500;font-size:15px;background:{{ t.iconBg }};color:{{ t.iconFg }}">{{ t.abbr }}</span>
+                    <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px">
+                      <span style="font-family:'Stolzl', system-ui;font-weight:500;font-size:17px;line-height:1.2">{{ t.name }}</span>
+                      <span style="font-size:13px;color:#818C99;line-height:1.45">{{ t.desc }}</span>
+                      <span style="font-family:'Stolzl', system-ui;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:{{ t.tagFg }}">{{ t.tag }}</span>
+                    </span>
+                  </button>
+                </sc-for>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isDenied }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:24px 20px;display:flex;flex-direction:column;gap:16px">
+                <div style="border:1px solid #F23838;border-radius:32px;padding:24px;display:flex;flex-direction:column;gap:12px">
+                  <div style="width:48px;height:48px;border-radius:16px;background:#F23838;display:flex;align-items:center;justify-content:center">
+                    <svg width="22" height="22" viewBox="0 0 22 22"><path d="M11 6v7M11 16h.01" stroke="#fff" stroke-width="2.2" stroke-linecap="round"></path></svg>
+                  </div>
+                  <div style="font-family:'Stolzl', system-ui;font-weight:500;font-size:22px;line-height:1.15">Тип заявки недоступен</div>
+                  <div style="font-size:15px;line-height:1.5">{{ denyMessage }}</div>
+                  <div style="font-family:'Stolzl', system-ui;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#818C99">403 · access_denied · правило проверено на сервере</div>
+                </div>
+                <button type="button" onClick="{{ onBack }}" style="padding:15px;border-radius:20px;border:1px solid #CCCCCC;background:#fff;font-family:'Stolzl', system-ui;font-weight:500;font-size:15px;cursor:pointer">Вернуться в каталог</button>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isForm }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:16px 20px 28px;display:flex;flex-direction:column;gap:18px">
+                <div style="border:1px solid #CCCCCC;border-radius:20px;padding:14px 16px;font-size:13px;line-height:1.45;color:#000;background:#F9F9F9">{{ formHint }}</div>
+                <sc-for list="{{ formFields }}" as="f" hint-placeholder-count="3">
+                  <div style="display:flex;flex-direction:column;gap:8px">
+                    <label style="font-family:'Stolzl', system-ui;font-weight:500;font-size:14px;display:flex;gap:5px;align-items:baseline">{{ f.label }}<span style="color:#F23838;font-size:13px">{{ f.req }}</span></label>
+                    <sc-if value="{{ f.isText }}" hint-placeholder-val="{{ false }}">
+                      <input type="text" value="{{ f.value }}" onChange="{{ f.onInput }}" placeholder="{{ f.hint }}" style="padding:14px;border-radius:20px;border:1px solid #CCCCCC;font-size:16px;background:#fff">
+                    </sc-if>
+                    <sc-if value="{{ f.isNumber }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:flex;align-items:center;gap:12px">
+                        <button type="button" onClick="{{ f.onDec }}" style="width:44px;height:44px;border-radius:16px;border:1px solid #CCCCCC;background:#fff;font-size:22px;cursor:pointer">−</button>
+                        <span style="font-family:'Stolzl', system-ui;font-weight:300;font-size:26px;min-width:32px;text-align:center">{{ f.value }}</span>
+                        <button type="button" onClick="{{ f.onInc }}" style="width:44px;height:44px;border-radius:16px;border:1px solid #CCCCCC;background:#fff;font-size:22px;cursor:pointer">+</button>
+                        <span style="font-size:13px;color:#818C99">{{ f.hint }}</span>
+                      </div>
+                    </sc-if>
+                    <sc-if value="{{ f.isSelect }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:flex;flex-wrap:wrap;gap:8px">
+                        <sc-for list="{{ f.options }}" as="o" hint-placeholder-count="4">
+                          <button type="button" onClick="{{ o.onPick }}" style="padding:11px 15px;border-radius:20px;font-size:14px;cursor:pointer;min-height:44px;white-space:nowrap;border:1px solid {{ o.bd }};background:{{ o.bg }};color:{{ o.fg }}">{{ o.label }}</button>
+                        </sc-for>
+                      </div>
+                    </sc-if>
+                    <sc-if value="{{ f.isRange }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:flex;gap:10px">
+                        <input type="date" value="{{ f.from }}" onChange="{{ f.onFrom }}" style="flex:1;min-width:0;padding:14px;border-radius:20px;border:1px solid #CCCCCC;font-size:15px;background:#fff">
+                        <input type="date" value="{{ f.to }}" onChange="{{ f.onTo }}" style="flex:1;min-width:0;padding:14px;border-radius:20px;border:1px solid #CCCCCC;font-size:15px;background:#fff">
+                      </div>
+                    </sc-if>
+                    <sc-if value="{{ f.isFile }}" hint-placeholder-val="{{ false }}">
+                      <button type="button" onClick="{{ f.onAttach }}" style="padding:16px;border-radius:20px;border:1px dashed #A8A8A8;background:#fff;cursor:pointer;display:flex;align-items:center;gap:12px;text-align:left;min-height:56px">
+                        <span style="width:32px;height:32px;border-radius:16px;background:#E1E0FF;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                          <svg width="14" height="14" viewBox="0 0 14 14"><path d="M7 1v12M1 7h12" stroke="#0804FF" stroke-width="2" stroke-linecap="round"></path></svg>
+                        </span>
+                        <span style="display:flex;flex-direction:column;gap:2px;min-width:0">
+                          <span style="font-family:'Stolzl', system-ui;font-weight:500;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ f.fileName }}</span>
+                          <span style="font-size:12px;color:#818C99">{{ f.hint }}</span>
+                        </span>
+                      </button>
+                    </sc-if>
+                    <sc-if value="{{ f.isTextarea }}" hint-placeholder-val="{{ false }}">
+                      <textarea rows="4" value="{{ f.value }}" onChange="{{ f.onInput }}" placeholder="{{ f.hint }}" style="padding:14px;border-radius:20px;border:1px solid #CCCCCC;font-size:16px;resize:none;background:#fff"></textarea>
+                    </sc-if>
+                  </div>
+                </sc-for>
+                <sc-if value="{{ formError }}" hint-placeholder-val="{{ false }}">
+                  <div style="font-size:13px;color:#F23838;line-height:1.4">{{ formError }}</div>
+                </sc-if>
+                <div style="border-top:1px solid #EEEEEE;padding-top:16px;display:flex;flex-direction:column;gap:10px">
+                  <div style="font-family:'Stolzl', system-ui;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#818C99">маршрут согласования</div>
+                  <sc-for list="{{ formRoute }}" as="s" hint-placeholder-count="2">
+                    <div style="display:flex;gap:10px;align-items:baseline;font-size:14px">
+                      <span style="font-family:'Stolzl', system-ui;font-weight:300;color:#0804FF;min-width:18px">{{ s.num }}</span>
+                      <span style="flex:1">{{ s.name }}</span>
+                      <span style="font-size:12px;color:#818C99">{{ s.sla }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+                <button type="button" onClick="{{ onSubmit }}" style="padding:17px;border-radius:20px;border:none;font-family:'Stolzl', system-ui;font-weight:500;font-size:16px;cursor:pointer;min-height:56px;background:{{ submitBg }};color:{{ submitFg }}">{{ submitLabel }}</button>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isDetail }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:16px 20px 28px;display:flex;flex-direction:column;gap:18px">
+                <div style="border:1px solid #CCCCCC;border-radius:32px;padding:20px;display:flex;flex-direction:column;gap:12px">
+                  <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+                    <span style="font-family:'Stolzl', system-ui;font-weight:300;font-size:15px;color:#818C99">№ {{ d.number }}</span>
+                    <span style="font-family:'Stolzl', system-ui;font-weight:500;font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:6px 10px;border-radius:20px;background:{{ d.badgeBg }};color:{{ d.badgeFg }}">{{ d.badge }}</span>
+                  </div>
+                  <div style="font-family:'Stolzl', system-ui;font-weight:500;font-size:24px;line-height:1.12">{{ d.title }}</div>
+                  <div style="font-size:14px;color:#818C99">{{ d.author }}</div>
+                  <sc-if value="{{ d.hasNote }}" hint-placeholder-val="{{ false }}">
+                    <div style="border:1px solid {{ d.noteBd }};border-radius:20px;padding:14px;font-size:14px;line-height:1.45;background:{{ d.noteBg }};color:{{ d.noteFg }}">{{ d.note }}</div>
+                  </sc-if>
+                </div>
+
+                <sc-if value="{{ d.hasCell }}" hint-placeholder-val="{{ false }}">
+                  <div style="border-radius:32px;padding:22px;background:#0804FF;color:#fff;display:flex;flex-direction:column;gap:14px">
+                    <div style="font-family:'Stolzl', system-ui;font-weight:500;font-size:11px;letter-spacing:.1em;text-transform:uppercase;opacity:.75">документ готов к выдаче</div>
+                    <div style="display:flex;gap:22px;align-items:flex-end">
+                      <div>
+                        <div style="font-size:12px;opacity:.75;margin-bottom:2px">ячейка</div>
+                        <div style="font-family:'Actay Wide', system-ui;font-weight:700;font-size:34px;line-height:1">{{ d.cellCode }}</div>
+                      </div>
+                      <div>
+                        <div style="font-size:12px;opacity:.75;margin-bottom:2px">код получения</div>
+                        <div style="font-family:'Stolzl', system-ui;font-weight:300;font-size:34px;line-height:1;letter-spacing:.06em">{{ d.pickup }}</div>
+                      </div>
+                    </div>
+                    <div style="font-size:13px;opacity:.85;line-height:1.45">{{ d.cellNote }}</div>
+                  </div>
+                </sc-if>
+
+                <div style="display:flex;flex-direction:column;gap:0">
+                  <div style="font-family:'Stolzl', system-ui;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#818C99;margin-bottom:12px">маршрут</div>
+                  <sc-for list="{{ d.stages }}" as="s" hint-placeholder-count="3">
+                    <div style="display:flex;gap:14px;align-items:stretch">
+                      <div style="width:14px;display:flex;flex-direction:column;align-items:center;flex-shrink:0">
+                        <span style="width:14px;height:14px;border-radius:50%;flex-shrink:0;margin-top:3px;border:2px solid {{ s.color }};background:{{ s.fill }}"></span>
+                        <sc-if value="{{ s.line }}" hint-placeholder-val="{{ true }}">
+                          <span style="flex:1;width:2px;background:{{ s.lineColor }};min-height:22px"></span>
+                        </sc-if>
+                      </div>
+                      <div style="flex:1;padding-bottom:18px;min-width:0">
+                        <div style="font-family:'Stolzl', system-ui;font-weight:500;font-size:15px;line-height:1.25">{{ s.name }}</div>
+                        <div style="font-size:13px;color:#818C99;margin-top:2px">{{ s.meta }}</div>
+                        <sc-if value="{{ s.comment }}" hint-placeholder-val="{{ false }}">
+                          <div style="margin-top:8px;border-left:2px solid #CCCCCC;padding-left:10px;font-size:13px;line-height:1.45;color:#000">{{ s.comment }}</div>
+                        </sc-if>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+
+                <div style="border-top:1px solid #EEEEEE;padding-top:16px;display:flex;flex-direction:column;gap:10px">
+                  <div style="font-family:'Stolzl', system-ui;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#818C99">данные заявки</div>
+                  <sc-for list="{{ d.data }}" as="row" hint-placeholder-count="3">
+                    <div style="display:flex;gap:12px;justify-content:space-between;font-size:14px;line-height:1.4">
+                      <span style="color:#818C99;flex-shrink:0">{{ row.k }}</span>
+                      <span style="text-align:right">{{ row.v }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+
+                <sc-if value="{{ d.commenting }}" hint-placeholder-val="{{ false }}">
+                  <textarea rows="3" value="{{ d.commentDraft }}" onChange="{{ onComment }}" placeholder="Причина возврата, минимум 10 символов" style="padding:14px;border-radius:20px;border:1px solid #CCCCCC;font-size:16px;resize:none"></textarea>
+                </sc-if>
+
+                <div style="display:flex;flex-direction:column;gap:10px">
+                  <sc-for list="{{ d.actions }}" as="a" hint-placeholder-count="2">
+                    <button type="button" onClick="{{ a.onRun }}" style="padding:17px;border-radius:20px;font-family:'Stolzl', system-ui;font-weight:500;font-size:16px;cursor:pointer;min-height:56px;border:1px solid {{ a.bd }};background:{{ a.bg }};color:{{ a.fg }}">{{ a.label }}</button>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isCells }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:16px 20px 24px;display:flex;flex-direction:column;gap:16px">
+                <div style="display:flex;gap:10px">
+                  <sc-for list="{{ cellStats }}" as="c" hint-placeholder-count="3">
+                    <div style="flex:1;border:1px solid #CCCCCC;border-radius:20px;padding:14px">
+                      <div style="font-family:'Stolzl', system-ui;font-weight:300;font-size:28px;line-height:1;color:{{ c.color }}">{{ c.n }}</div>
+                      <div style="font-size:12px;color:#818C99;margin-top:4px">{{ c.label }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px">
+                  <sc-for list="{{ cellGrid }}" as="c" hint-placeholder-count="16">
+                    <button type="button" onClick="{{ c.onTap }}" style="aspect-ratio:1;border-radius:20px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-family:'Stolzl', system-ui;border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }}">
+                      <span style="font-weight:500;font-size:14px">{{ c.code }}</span>
+                      <span style="font-weight:300;font-size:10px;opacity:.8">{{ c.state }}</span>
+                    </button>
+                  </sc-for>
+                </div>
+                <div style="font-size:13px;color:#818C99;line-height:1.45">{{ cellsHint }}</div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isNotifications }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:16px 20px 24px;display:flex;flex-direction:column;gap:10px">
+                <sc-if value="{{ notesEmpty }}" hint-placeholder-val="{{ false }}">
+                  <div style="border:1px dashed #A8A8A8;border-radius:32px;padding:36px 24px;text-align:center;font-size:14px;color:#818C99;line-height:1.5">Уведомлений нет. Они появляются на каждом переходе статуса заявки.</div>
+                </sc-if>
+                <sc-for list="{{ notes }}" as="n" hint-placeholder-count="4">
+                  <button type="button" onClick="{{ n.onOpen }}" style="text-align:left;border-radius:20px;padding:15px;cursor:pointer;display:flex;flex-direction:column;gap:6px;border:1px solid {{ n.bd }};background:{{ n.bg }}">
+                    <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
+                      <span style="font-family:'Stolzl', system-ui;font-weight:500;font-size:15px;line-height:1.2">{{ n.title }}</span>
+                      <span style="font-size:11px;color:#818C99;white-space:nowrap">{{ n.time }}</span>
+                    </div>
+                    <div style="font-size:13px;line-height:1.45;color:#000">{{ n.body }}</div>
+                  </button>
+                </sc-for>
+                <sc-if value="{{ hasUnread }}" hint-placeholder-val="{{ false }}">
+                  <button type="button" onClick="{{ onReadAll }}" style="margin-top:6px;padding:15px;border-radius:20px;border:1px solid #CCCCCC;background:#fff;font-family:'Stolzl', system-ui;font-weight:500;font-size:15px;cursor:pointer">Отметить все прочитанными</button>
+                </sc-if>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isRegistry }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:16px 20px 24px;display:flex;flex-direction:column;gap:14px">
+                <div style="display:flex;gap:8px;overflow:auto;padding-bottom:2px">
+                  <sc-for list="{{ groupFilters }}" as="g" hint-placeholder-count="4">
+                    <button type="button" onClick="{{ g.onPick }}" style="padding:10px 14px;border-radius:20px;font-size:13px;white-space:nowrap;cursor:pointer;min-height:44px;border:1px solid {{ g.bd }};background:{{ g.bg }};color:{{ g.fg }}">{{ g.label }}</button>
+                  </sc-for>
+                </div>
+                <sc-for list="{{ registry }}" as="r" hint-placeholder-count="4">
+                  <div style="border:1px solid #CCCCCC;border-radius:20px;padding:15px;display:flex;flex-direction:column;gap:6px">
+                    <div style="display:flex;justify-content:space-between;gap:8px">
+                      <span style="font-family:'Stolzl', system-ui;font-weight:500;font-size:16px">{{ r.name }}</span>
+                      <span style="font-family:'Stolzl', system-ui;font-weight:300;font-size:13px;color:#818C99">{{ r.group }}</span>
+                    </div>
+                    <div style="font-size:14px">{{ r.period }}</div>
+                    <div style="font-size:12px;color:#818C99">{{ r.meta }}</div>
+                  </div>
+                </sc-for>
+                <button type="button" onClick="{{ onExport }}" style="padding:15px;border-radius:20px;border:1px solid #CCCCCC;background:#fff;font-family:'Stolzl', system-ui;font-weight:500;font-size:15px;cursor:pointer">Выгрузить CSV</button>
+                <div style="font-size:12px;color:#818C99;line-height:1.45">Реестр только для чтения: источник — заявки типа absence в статусе ISSUED.</div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isTypes }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:16px 20px 24px;display:flex;flex-direction:column;gap:12px">
+                <div style="border:1px solid #0804FF;border-radius:20px;padding:15px;font-size:13px;line-height:1.5">Новый тип заявки — это запись конфигурации: схема полей, маршрут, правило доступа. Правок кода ядра не требуется.</div>
+                <sc-for list="{{ adminTypes }}" as="t" hint-placeholder-count="7">
+                  <button type="button" onClick="{{ t.onOpen }}" style="text-align:left;border:1px solid #CCCCCC;border-radius:20px;padding:15px;background:#fff;cursor:pointer;display:flex;flex-direction:column;gap:6px" style-hover="background:#F5F5F5">
+                    <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
+                      <span style="font-family:'Stolzl', system-ui;font-weight:500;font-size:16px">{{ t.name }}</span>
+                      <span style="font-family:'Stolzl', system-ui;font-weight:300;font-size:12px;color:#818C99">{{ t.code }}</span>
+                    </div>
+                    <div style="font-size:12px;color:#818C99">{{ t.meta }}</div>
+                  </button>
+                </sc-for>
+                <button type="button" onClick="{{ onNewType }}" style="padding:16px;border-radius:20px;border:none;background:#0804FF;color:#fff;font-family:'Stolzl', system-ui;font-weight:500;font-size:15px;cursor:pointer">Создать тип заявки</button>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isTypeEditor }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:16px 20px 24px;display:flex;flex-direction:column;gap:18px">
+                <div style="display:flex;flex-direction:column;gap:8px">
+                  <div style="font-family:'Stolzl', system-ui;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#818C99">флаги</div>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px">
+                    <sc-for list="{{ editorFlags }}" as="fl" hint-placeholder-count="3">
+                      <span style="padding:9px 13px;border-radius:20px;font-family:'Stolzl', system-ui;font-size:12px;letter-spacing:.02em;border:1px solid {{ fl.bd }};background:{{ fl.bg }};color:{{ fl.fg }}">{{ fl.label }}</span>
+                    </sc-for>
+                  </div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:10px">
+                  <div style="font-family:'Stolzl', system-ui;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#818C99">fields_schema</div>
+                  <sc-for list="{{ editorFields }}" as="f" hint-placeholder-count="3">
+                    <div style="border:1px solid #CCCCCC;border-radius:20px;padding:14px;display:flex;justify-content:space-between;gap:10px;align-items:center">
+                      <span style="min-width:0">
+                        <span style="font-family:'Stolzl', system-ui;font-weight:500;font-size:15px;display:block">{{ f.label }}</span>
+                        <span style="font-family:'Stolzl', system-ui;font-weight:300;font-size:12px;color:#818C99">{{ f.key }}</span>
+                      </span>
+                      <span style="font-family:'Stolzl', system-ui;font-size:11px;letter-spacing:.06em;padding:6px 10px;border-radius:20px;background:#EEEEEE;white-space:nowrap">{{ f.type }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:10px">
+                  <div style="font-family:'Stolzl', system-ui;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#818C99">route_steps</div>
+                  <sc-for list="{{ editorRoute }}" as="s" hint-placeholder-count="2">
+                    <div style="border:1px solid #CCCCCC;border-radius:20px;padding:14px;display:flex;gap:12px;align-items:baseline">
+                      <span style="font-family:'Stolzl', system-ui;font-weight:300;font-size:20px;color:#0804FF">{{ s.num }}</span>
+                      <span style="flex:1;min-width:0">
+                        <span style="font-family:'Stolzl', system-ui;font-weight:500;font-size:15px;display:block">{{ s.name }}</span>
+                        <span style="font-size:12px;color:#818C99">{{ s.dept }}</span>
+                      </span>
+                      <span style="font-size:12px;color:#818C99;white-space:nowrap">{{ s.sla }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isAnalytics }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:16px 20px 24px;display:flex;flex-direction:column;gap:20px">
+                <div style="display:flex;gap:10px">
+                  <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="3">
+                    <div style="flex:1;border:1px solid #CCCCCC;border-radius:20px;padding:14px">
+                      <div style="font-family:'Stolzl', system-ui;font-weight:300;font-size:26px;line-height:1;color:#0804FF">{{ k.n }}</div>
+                      <div style="font-size:12px;color:#818C99;margin-top:4px;line-height:1.3">{{ k.label }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:12px">
+                  <div style="font-family:'Stolzl', system-ui;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#818C99">заявки по типам</div>
+                  <sc-for list="{{ byType }}" as="b" hint-placeholder-count="5">
+                    <div style="display:flex;flex-direction:column;gap:6px">
+                      <div style="display:flex;justify-content:space-between;font-size:14px">
+                        <span>{{ b.name }}</span>
+                        <span style="font-family:'Stolzl', system-ui;font-weight:300;color:#818C99">{{ b.total }}</span>
+                      </div>
+                      <div style="height:8px;background:#EEEEEE;border-radius:4px;overflow:hidden">
+                        <div style="height:100%;background:#0804FF;width:{{ b.w }}"></div>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:10px">
+                  <div style="font-family:'Stolzl', system-ui;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#818C99">узкие места</div>
+                  <sc-for list="{{ bottlenecks }}" as="b" hint-placeholder-count="3">
+                    <div style="display:flex;justify-content:space-between;gap:10px;border:1px solid #CCCCCC;border-radius:20px;padding:13px 15px;font-size:14px">
+                      <span>{{ b.dept }}</span>
+                      <span style="font-family:'Stolzl', system-ui;font-weight:300;color:{{ b.color }}">{{ b.days }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isLog }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:16px 20px 24px;display:flex;flex-direction:column;gap:0">
+                <sc-for list="{{ log }}" as="e" hint-placeholder-count="6">
+                  <div style="display:flex;gap:12px;padding-bottom:16px">
+                    <span style="width:8px;height:8px;border-radius:50%;background:#0804FF;margin-top:6px;flex-shrink:0"></span>
+                    <div style="flex:1;min-width:0">
+                      <div style="font-family:'Stolzl', system-ui;font-weight:500;font-size:13px;letter-spacing:.02em">{{ e.action }}</div>
+                      <div style="font-size:13px;color:#000;margin-top:2px;line-height:1.4">{{ e.payload }}</div>
+                      <div style="font-size:12px;color:#818C99;margin-top:2px">{{ e.meta }}</div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isProfile }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:16px 20px 24px;display:flex;flex-direction:column;gap:16px">
+                <div style="border:1px solid #CCCCCC;border-radius:32px;padding:20px;display:flex;flex-direction:column;gap:8px">
+                  <div style="font-family:'Stolzl', system-ui;font-weight:500;font-size:22px;line-height:1.15">{{ me.name }}</div>
+                  <div style="font-size:14px;color:#818C99">{{ me.meta }}</div>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px">
+                    <sc-for list="{{ me.chips }}" as="c" hint-placeholder-count="3">
+                      <span style="padding:7px 12px;border-radius:20px;font-family:'Stolzl', system-ui;font-size:12px;background:#EEEEEE">{{ c.label }}</span>
+                    </sc-for>
+                  </div>
+                </div>
+                <sc-for list="{{ me.rows }}" as="r" hint-placeholder-count="3">
+                  <div style="display:flex;justify-content:space-between;gap:12px;font-size:14px;border-bottom:1px solid #EEEEEE;padding-bottom:12px">
+                    <span style="color:#818C99">{{ r.k }}</span>
+                    <span style="text-align:right">{{ r.v }}</span>
+                  </div>
+                </sc-for>
+                <button type="button" onClick="{{ onWipe }}" style="padding:15px;border-radius:20px;border:1px solid #CCCCCC;background:#fff;font-family:'Stolzl', system-ui;font-weight:500;font-size:15px;cursor:pointer">{{ wipeLabel }}</button>
+                <button type="button" onClick="{{ onLogout }}" style="padding:15px;border-radius:20px;border:1px solid #F23838;background:#fff;color:#F23838;font-family:'Stolzl', system-ui;font-weight:500;font-size:15px;cursor:pointer">Выйти</button>
+              </div>
+            </sc-if>
+
+          </div>
+
+          <sc-if value="{{ showTabs }}" hint-placeholder-val="{{ false }}">
+            <div style="flex-shrink:0;border-top:1px solid #EEEEEE;background:#fff;display:flex;padding:0 8px 30px">
+              <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4">
+                <button type="button" onClick="{{ t.onPick }}" style="flex:1;min-width:0;border:none;background:none;cursor:pointer;padding:12px 4px 6px;display:flex;flex-direction:column;align-items:center;gap:6px">
+                  <span style="height:3px;width:22px;border-radius:2px;background:{{ t.bar }}"></span>
+                  <span style="font-family:'Stolzl', system-ui;font-weight:500;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:{{ t.fg }};position:relative">{{ t.label }}<sc-if value="{{ t.dot }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:-3px;right:-8px;width:6px;height:6px;border-radius:50%;background:#F23838"></span></sc-if></span>
+                </button>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute;left:16px;right:16px;bottom:104px;z-index:80;background:#000;color:#fff;border-radius:20px;padding:14px 16px;font-size:14px;line-height:1.4">{{ toast }}</div>
+          </sc-if>
+        </div>
+      </sc-if>
+    </div>
+  </x-import>
+
+  <div style="width:100%;max-width:900px;font-size:13px;line-height:1.6;color:#818C99">
+    Сценарий для защиты: студент → «Каталог» → «Справка об обучении» → подача. Переключитесь на сотрудника: заявка в очереди, согласуйте оба этапа — движок назначит свободную ячейку и код. Вернитесь в роль студента: код виден на экране заявки. Сотрудник подтверждает выдачу в «Ячейках» — статус ISSUED.
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:900,&quot;height&quot;:1100},&quot;startRole&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;&quot;,&quot;STUDENT&quot;,&quot;STAFF&quot;,&quot;TEACHER&quot;,&quot;ADMIN&quot;],&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Демо&quot;},&quot;cellTtlDays&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:7,&quot;min&quot;:1,&quot;max&quot;:30,&quot;unit&quot;:&quot; дн.&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Демо&quot;}}">
+const DEPTS = ['Деканат','Канцелярия','Куратор','Заведующий отделением','Профком','Медпункт','Отдел кадров студентов','Бухгалтерия','Комиссия по заселению'];
+
+const TYPES = [
+  { code:'certificate', name:'Справка об обучении', abbr:'СП', desc:'Для военкомата, соцзащиты, банка. Выдаётся через ячейку.', usesCell:true,
+    fields:[
+      { key:'purpose', label:'Куда требуется справка', type:'SELECT', required:true, options:['Военкомат','Соцзащита','По месту требования','Для банка'], hint:'Организация-получатель' },
+      { key:'copies', label:'Количество экземпляров', type:'NUMBER', required:true, min:1, max:5, def:1, hint:'от 1 до 5' },
+      { key:'comment', label:'Комментарий', type:'TEXTAREA', required:false, hint:'Не обязательно, до 1000 символов' }
+    ],
+    route:[{ name:'Деканат', dept:'Деканат', sla:2 },{ name:'Канцелярия / печать', dept:'Канцелярия', sla:1 }] },
+  { code:'sanatorium', name:'Путёвка в профилакторий', abbr:'ПФ', desc:'Заезды с ограниченной квотой и листом ожидания.', usesBooking:true,
+    accessRule:{ field:'isBudget', value:true, denyMessage:'Запись в профилакторий доступна только студентам бюджетной формы обучения' },
+    fields:[
+      { key:'period_id', label:'Заезд', type:'SELECT', required:true, options:['Заезд №3, март — 4 места','Заезд №4, апрель — лист ожидания','Заезд №5, май — 12 мест'] },
+      { key:'health_note', label:'Справка о здоровье', type:'FILE', required:false, hint:'pdf, jpg — до 10 МБ' }
+    ],
+    route:[{ name:'Проверка права', dept:'Система', sla:0, auto:true },{ name:'Профком', dept:'Профком', sla:3 },{ name:'Медпункт', dept:'Медпункт', sla:3 }] },
+  { code:'absence', name:'Освобождение от занятий', abbr:'ОС', desc:'Соревнования, олимпиады, конференции. Нужна офлайн-подпись.', requiresSignature:true,
+    fields:[
+      { key:'period', label:'Период освобождения', type:'DATE_RANGE', required:true },
+      { key:'reason', label:'Основание', type:'SELECT', required:true, options:['Соревнования','Олимпиада','Конференция','Иное'] },
+      { key:'call_letter', label:'Письмо-вызов', type:'FILE', required:true, hint:'pdf, jpg, png — до 10 МБ' },
+      { key:'comment', label:'Комментарий', type:'TEXTAREA', required:false, hint:'Не обязательно' }
+    ],
+    route:[{ name:'Куратор', dept:'Куратор', sla:1 },{ name:'Заведующий отделением', dept:'Заведующий отделением', sla:2 },{ name:'Загрузка подписанного скана', dept:'Заведующий отделением', sla:1 }] },
+  { code:'dormitory', name:'Заявление на общежитие', abbr:'ОБ', desc:'Рассматривается комиссией по заселению.',
+    fields:[
+      { key:'family_status', label:'Семейное положение', type:'SELECT', required:true, options:['Не в браке','В браке','Есть дети'] },
+      { key:'documents', label:'Документы', type:'FILE', required:true, hint:'Можно несколько файлов' },
+      { key:'comment', label:'Комментарий', type:'TEXTAREA', required:false, hint:'Не обязательно' }
+    ],
+    route:[{ name:'Деканат', dept:'Деканат', sla:3 },{ name:'Комиссия по заселению', dept:'Комиссия по заселению', sla:10 }] },
+  { code:'student_card', name:'Дубликат студенческого', abbr:'СТ', desc:'Утеря или порча. Выдаётся через ячейку.', usesCell:true,
+    fields:[
+      { key:'reason', label:'Причина', type:'SELECT', required:true, options:['Утеря','Порча','Первичное получение'] },
+      { key:'photo', label:'Фотография', type:'FILE', required:true, hint:'jpg, png — до 10 МБ' }
+    ],
+    route:[{ name:'Деканат', dept:'Деканат', sla:2 },{ name:'Отдел кадров студентов', dept:'Отдел кадров студентов', sla:3 },{ name:'Печать', dept:'Канцелярия', sla:2 }] },
+  { code:'financial_aid', name:'Материальная помощь', abbr:'МП', desc:'Профком и бухгалтерия, срок до 12 дней.',
+    fields:[
+      { key:'reason', label:'Обоснование', type:'TEXTAREA', required:true, hint:'Опишите ситуацию' },
+      { key:'documents', label:'Подтверждающие документы', type:'FILE', required:true, hint:'Можно несколько файлов' }
+    ],
+    route:[{ name:'Куратор', dept:'Куратор', sla:2 },{ name:'Профком', dept:'Профком', sla:5 },{ name:'Бухгалтерия', dept:'Бухгалтерия', sla:5 }] },
+  { code:'medical_note', name:'Пропуск по болезни', abbr:'ПБ', desc:'Один этап: куратор группы.',
+    fields:[
+      { key:'period', label:'Период пропуска', type:'DATE_RANGE', required:true },
+      { key:'medical_certificate', label:'Медицинская справка', type:'FILE', required:true, hint:'pdf, jpg — до 10 МБ' }
+    ],
+    route:[{ name:'Куратор', dept:'Куратор', sla:1 }] }
+];
+
+const ST = {
+  DRAFT:['черновик','#EEEEEE','#000000'],
+  IN_REVIEW:['на согласовании','#E1E0FF','#0804FF'],
+  NEEDS_FIX:['на доработке','#FFE9CC','#8A4B00'],
+  AWAITING_SIGNATURE:['нужна подпись','#E1E0FF','#0804FF'],
+  APPROVED:['согласовано','#E1E0FF','#0804FF'],
+  READY:['готово к выдаче','#0804FF','#FFFFFF'],
+  ISSUED:['выдано','#000000','#FFFFFF'],
+  REJECTED:['отклонено','#F23838','#FFFFFF'],
+  CANCELLED:['отменено','#EEEEEE','#818C99']
+};
+
+const ME = {
+  STUDENT:{ name:'Иванова Анна Сергеевна', email:'a.ivanova@student.local', meta:'ИС-21, 3 курс · бюджет', isBudget:true },
+  STAFF:{ name:'Петров Сергей Игоревич', email:'s.petrov@university.local', meta:'Деканат · сотрудник', dept:'Деканат' },
+  TEACHER:{ name:'Соколова Мария Львовна', email:'m.sokolova@university.local', meta:'Преподаватель · математика' },
+  ADMIN:{ name:'Администратор системы', email:'admin@university.local', meta:'Полные права' }
+};
+
+const pad = (n) => String(n).padStart(6,'0');
+const fmt = (iso) => { if(!iso) return '—'; const [y,m,d] = iso.split('-'); return d+'.'+m+'.'+y; };
+
+function mkStages(type, done) {
+  return type.route.map((r,i) => ({
+    name:r.name, dept:r.dept, sla:r.sla, auto:r.auto,
+    status: i < done ? 'APPROVED' : (i === done ? 'ACTIVE' : 'PENDING'),
+    by: i < done ? (r.auto ? 'система' : r.dept) : null,
+    acted: i < done ? '12.03.2026' : null, comment:null
+  }));
+}
+
+function seedApps() {
+  const mk = (n, code, status, done, extra) => Object.assign({
+    id:'a'+n, number:'2026-'+pad(n), typeCode:code, status, author:'Иванова А. С.', group:'ИС-21', course:3, mine:true,
+    stages:mkStages(TYPES.find(t=>t.code===code), done), data:{}, created:'11.03.2026'
+  }, extra||{});
+  return [
+    mk(112,'certificate','ISSUED',2,{ data:{ purpose:'Военкомат', copies:2 }, cell:'A-04', pickup:'481902', issuedAt:'10.03.2026' }),
+    mk(118,'dormitory','IN_REVIEW',1,{ data:{ family_status:'Не в браке', documents:'documents.pdf' } }),
+    mk(121,'financial_aid','NEEDS_FIX',1,{ data:{ reason:'Оплата лечения', documents:'spravka.pdf' },
+      note:'Приложите чек об оплате и справку из медучреждения — текущий файл нечитаем.' }),
+    mk(103,'absence','ISSUED',3,{ mine:false, author:'Кузнецов Дмитрий Павлович', group:'ПМ-32', course:2,
+      data:{ period:'02.03.2026 — 06.03.2026', reason:'Соревнования', call_letter:'vyzov.pdf' } }),
+    mk(104,'absence','ISSUED',3,{ mine:false, author:'Романова Ольга Викторовна', group:'ИС-21', course:3,
+      data:{ period:'09.03.2026 — 11.03.2026', reason:'Конференция', call_letter:'letter.pdf' } }),
+    mk(119,'certificate','IN_REVIEW',0,{ mine:false, author:'Гаврилов Илья Максимович', group:'ЭК-11', course:1,
+      data:{ purpose:'Для банка', copies:1 } }),
+    mk(120,'student_card','IN_REVIEW',0,{ mine:false, author:'Никитина Дарья Олеговна', group:'ПМ-32', course:2,
+      data:{ reason:'Утеря', photo:'photo.jpg' } })
+  ];
+}
+
+function seedNotes() {
+  return [
+    { id:'n1', title:'Заявка №2026-000121 возвращена', body:'Приложите чек об оплате и справку из медучреждения.', time:'вчера', read:false, appId:'a121', role:'STUDENT' },
+    { id:'n2', title:'Документ по заявке №2026-000112 выдан', body:'Ячейка A-04 освобождена, заявка закрыта.', time:'10.03', read:true, appId:'a112', role:'STUDENT' },
+    { id:'n3', title:'Заявка №2026-000118: этап «Деканат» пройден', body:'Передана в комиссию по заселению.', time:'11.03', read:false, appId:'a118', role:'STUDENT' },
+    { id:'n4', title:'Новая заявка №2026-000119 ожидает согласования', body:'Справка об обучении, этап «Деканат», норматив 2 дня.', time:'сегодня', read:false, appId:'a119', role:'STAFF' },
+    { id:'n5', title:'Просрочен SLA по заявке №2026-000120', body:'Ожидает решения дольше норматива.', time:'сегодня', read:false, appId:'a120', role:'STAFF' }
+  ];
+}
+
+function seedCells() {
+  const out = [];
+  ['A','B'].forEach(l => { for(let i=1;i<=8;i++) out.push({ code:l+'-'+String(i).padStart(2,'0'), status:'FREE', appId:null, pickup:null }); });
+  out[3].status='OCCUPIED'; out[3].appId='a112'; out[3].pickup='481902';
+  out[6].status='MAINTENANCE';
+  out[11].status='OCCUPIED'; out[11].appId='a117'; out[11].pickup='330514';
+  return out;
+}
+
+class Component extends DCLogic {
+  state = {
+    role: this.props.startRole || null,
+    screen: this.props.startRole ? 'home' : 'login',
+    apps: seedApps(), notes: seedNotes(), cells: seedCells(),
+    loading:false, typeCode:null, form:{}, appId:null, commenting:false, commentDraft:'',
+    toast:null, group:'Все группы', seq:122, editorCode:'certificate', wiped:false
+  };
+
+  componentWillUnmount(){ clearTimeout(this._t); clearTimeout(this._tt); }
+
+  go = (screen, opts) => {
+    this.setState(Object.assign({ screen, commenting:false, commentDraft:'' }, opts||{}));
+    if (screen === 'home' || screen === 'queue') {
+      this.setState({ loading:true });
+      clearTimeout(this._t);
+      this._t = setTimeout(() => this.setState({ loading:false }), 650);
+    }
+  };
+
+  toast = (msg) => {
+    this.setState({ toast:msg });
+    clearTimeout(this._tt);
+    this._tt = setTimeout(() => this.setState({ toast:null }), 2600);
+  };
+
+  pickRole = (role) => { this.setState({ role, notes:this.state.notes }); this.go(role === 'STUDENT' ? 'home' : role === 'STAFF' ? 'queue' : role === 'TEACHER' ? 'registry' : 'types'); };
+
+  openType = (code) => {
+    const t = TYPES.find(x => x.code === code);
+    if (t.accessRule && !ME.STUDENT[t.accessRule.field]) { this.go('denied', { typeCode:code }); return; }
+    const form = {};
+    t.fields.forEach(f => { if (f.def !== undefined) form[f.key] = f.def; });
+    this.go('form', { typeCode:code, form });
+  };
+
+  setField = (key, val) => this.setState({ form: Object.assign({}, this.state.form, { [key]:val }) });
+
+  submit = () => {
+    const t = TYPES.find(x => x.code === this.state.typeCode);
+    const missing = t.fields.filter(f => f.required && !this.state.form[f.key]);
+    if (missing.length) { this.toast('Заполните: ' + missing.map(f => f.label.toLowerCase()).join(', ')); return; }
+    const n = this.state.seq;
+    const stages = mkStages(t, t.route[0] && t.route[0].auto ? 1 : 0);
+    const app = { id:'a'+n, number:'2026-'+pad(n), typeCode:t.code, status:'IN_REVIEW', author:ME.STUDENT.name, group:'ИС-21', course:3,
+      mine:true, stages, data:Object.assign({}, this.state.form), created:'12.03.2026' };
+    const note = { id:'n'+n, title:'Заявка №'+app.number+' принята', body:'Передана на согласование: этап «'+stages.find(s=>s.status==='ACTIVE').name+'».', time:'только что', read:false, appId:app.id, role:'STUDENT' };
+    const snote = { id:'s'+n, title:'Новая заявка №'+app.number+' ожидает согласования', body:t.name+', этап «'+stages.find(s=>s.status==='ACTIVE').name+'».', time:'только что', read:false, appId:app.id, role:'STAFF' };
+    this.setState({ apps:[app].concat(this.state.apps), notes:[note, snote].concat(this.state.notes), seq:n+1, appId:app.id, screen:'detail' });
+    this.toast('Заявка №' + app.number + ' подана');
+  };
+
+  approve = (id) => {
+    const apps = this.state.apps.slice();
+    const i = apps.findIndex(a => a.id === id);
+    const app = Object.assign({}, apps[i]);
+    const t = TYPES.find(x => x.code === app.typeCode);
+    const stages = app.stages.map(s => Object.assign({}, s));
+    const ai = stages.findIndex(s => s.status === 'ACTIVE');
+    if (ai < 0) return;
+    stages[ai].status = 'APPROVED'; stages[ai].by = stages[ai].dept; stages[ai].acted = '12.03.2026';
+    let toastMsg = 'Этап «' + stages[ai].name + '» согласован';
+    let cells = this.state.cells;
+    const notes = [];
+    if (ai + 1 < stages.length) {
+      stages[ai + 1].status = 'ACTIVE';
+      notes.push({ id:'ap'+Date.now(), title:'Заявка №'+app.number+': этап «'+stages[ai].name+'» пройден', body:'Следующий этап — «'+stages[ai+1].name+'».', time:'только что', read:false, appId:app.id, role:'STUDENT' });
+      app.status = 'IN_REVIEW';
+    } else if (t.requiresSignature) {
+      app.status = 'AWAITING_SIGNATURE';
+      notes.push({ id:'ap'+Date.now(), title:'Требуется подпись по заявке №'+app.number, body:'Скачайте PDF, подпишите у заведующего и загрузите скан.', time:'только что', read:false, appId:app.id, role:'STUDENT' });
+      toastMsg = 'Сгенерирован PDF, заявка ждёт подпись';
+    } else if (t.usesCell) {
+      const ci = cells.findIndex(c => c.status === 'FREE');
+      if (ci < 0) {
+        app.status = 'APPROVED';
+        toastMsg = 'Свободных ячеек нет — заявка ждёт освобождения';
+      } else {
+        cells = cells.slice();
+        const pickup = String(Math.floor(100000 + Math.random() * 900000));
+        cells[ci] = { code:cells[ci].code, status:'OCCUPIED', appId:app.id, pickup };
+        app.status = 'READY'; app.cell = cells[ci].code; app.pickup = pickup;
+        notes.push({ id:'ap'+Date.now(), title:'Документ по заявке №'+app.number+' готов', body:'Ячейка '+app.cell+', код '+pickup+'. Хранится до 19.03.2026.', time:'только что', read:false, appId:app.id, role:'STUDENT' });
+        toastMsg = 'Назначена ячейка ' + app.cell + ', код ' + pickup;
+      }
+    } else {
+      app.status = 'ISSUED';
+      notes.push({ id:'ap'+Date.now(), title:'Заявка №'+app.number+' закрыта', body:'Решение зафиксировано в системе.', time:'только что', read:false, appId:app.id, role:'STUDENT' });
+    }
+    app.stages = stages; apps[i] = app;
+    this.setState({ apps, cells, notes:notes.concat(this.state.notes) });
+    this.toast(toastMsg);
+  };
+
+  returnFix = (id) => {
+    if (!this.state.commenting) { this.setState({ commenting:true }); return; }
+    const c = (this.state.commentDraft || '').trim();
+    if (c.length < 10) { this.toast('Комментарий обязателен, минимум 10 символов'); return; }
+    const apps = this.state.apps.map(a => {
+      if (a.id !== id) return a;
+      const stages = a.stages.map(s => s.status === 'ACTIVE' ? Object.assign({}, s, { status:'RETURNED', comment:c, acted:'12.03.2026' }) : s);
+      return Object.assign({}, a, { status:'NEEDS_FIX', stages, note:c });
+    });
+    const app = apps.find(a => a.id === id);
+    const note = { id:'r'+Date.now(), title:'Заявка №'+app.number+' возвращена на доработку', body:c, time:'только что', read:false, appId:id, role:'STUDENT' };
+    this.setState({ apps, notes:[note].concat(this.state.notes), commenting:false, commentDraft:'' });
+    this.toast('Возвращена на доработку');
+  };
+
+  resubmit = (id) => {
+    const apps = this.state.apps.map(a => a.id === id
+      ? Object.assign({}, a, { status:'IN_REVIEW', note:null, stages:a.stages.map(s => s.status === 'RETURNED' ? Object.assign({}, s, { status:'ACTIVE', acted:null }) : s) })
+      : a);
+    this.setState({ apps });
+    this.toast('Отправлена повторно — пройденные этапы сохранены');
+  };
+
+  cancel = (id) => {
+    this.setState({ apps: this.state.apps.map(a => a.id === id ? Object.assign({}, a, { status:'CANCELLED' }) : a) });
+    this.toast('Заявка отменена');
+  };
+
+  issue = (id) => {
+    const apps = this.state.apps.map(a => a.id === id ? Object.assign({}, a, { status:'ISSUED' }) : a);
+    const cells = this.state.cells.map(c => c.appId === id ? { code:c.code, status:'FREE', appId:null, pickup:null } : c);
+    this.setState({ apps, cells });
+    this.toast('Выдача подтверждена, ячейка свободна');
+  };
+
+  uploadScan = (id) => {
+    const apps = this.state.apps.map(a => a.id === id ? Object.assign({}, a, { status:'ISSUED', scan:'scan_signed.pdf' }) : a);
+    this.setState({ apps });
+    this.toast('Скан загружен, сотрудник подтвердил');
+  };
+
+  renderVals() {
+    const s = this.state;
+    const role = s.role;
+    const scr = s.screen;
+    const app = s.apps.find(a => a.id === s.appId);
+    const typeOf = (c) => TYPES.find(t => t.code === c) || TYPES[0];
+    const badge = (st) => ST[st] || ST.DRAFT;
+    const mineApps = s.wiped ? [] : s.apps.filter(a => a.mine);
+    const queue = s.wiped ? [] : s.apps.filter(a => ['IN_REVIEW','AWAITING_SIGNATURE','APPROVED','READY'].indexOf(a.status) >= 0);
+    const myNotes = (s.wiped ? [] : s.notes).filter(n => n.role === (role === 'STAFF' ? 'STAFF' : 'STUDENT'));
+    const unread = myNotes.some(n => !n.read);
+
+    const hdrMap = {
+      home:['мои заявки','Заявки'], catalog:['новая заявка','Каталог'], form:['подача','Заполнение'],
+      detail:['заявка','Детали'], denied:['доступ','Отказ'], notifications:['уведомления','Входящие'],
+      profile:['профиль','Аккаунт'], queue:['очередь согласования','На мне'], cells:['ячейки выдачи','Ячейки'],
+      registry:['реестр освобождённых','Освобождения'], types:['типы заявок','Конфигурация'],
+      typeEditor:['тип заявки','Конфигурация'], analytics:['аналитика','Сводка'], log:['журнал событий','Аудит']
+    };
+    const hdr = hdrMap[scr] || ['','',''];
+    const backScreens = { form:'catalog', detail:role === 'STUDENT' ? 'home' : 'queue', denied:'catalog', typeEditor:'types' };
+    const tabScreens = ['home','catalog','notifications','profile','queue','cells','registry','types','analytics','log'];
+
+    const tabDefs = {
+      STUDENT:[['home','Заявки'],['catalog','Каталог'],['notifications','Входящие'],['profile','Профиль']],
+      STAFF:[['queue','Очередь'],['cells','Ячейки'],['notifications','Входящие'],['profile','Профиль']],
+      TEACHER:[['registry','Реестр'],['profile','Профиль']],
+      ADMIN:[['types','Типы'],['analytics','Аналитика'],['log','Журнал'],['profile','Профиль']]
+    };
+
+    const mkItem = (a) => {
+      const t = typeOf(a.typeCode); const b = badge(a.status);
+      const active = a.stages.find(x => x.status === 'ACTIVE' || x.status === 'RETURNED');
+      return {
+        onOpen: () => this.go('detail', { appId:a.id }),
+        meta:'№ ' + a.number + ' · ' + a.created,
+        badge:b[0], badgeBg:b[1], badgeFg:b[2],
+        title:t.name,
+        sub: role === 'STUDENT'
+          ? (a.status === 'READY' ? 'Ячейка ' + a.cell + ' · код ' + a.pickup : active ? 'Ждёт: ' + active.name : 'Маршрут завершён')
+          : a.author + ' · ' + a.group + (active ? ' · ' + active.name : ''),
+        progress:true,
+        bars:a.stages.map(x => ({ color: x.status === 'APPROVED' ? '#0804FF' : x.status === 'ACTIVE' ? '#5552FF' : x.status === 'RETURNED' ? '#F23838' : '#EEEEEE' }))
+      };
+    };
+
+    const listSource = scr === 'queue' ? queue : mineApps;
+    const t = s.typeCode ? typeOf(s.typeCode) : null;
+
+    const formFields = (t ? t.fields : []).map(f => {
+      const v = s.form[f.key];
+      return {
+        label:f.label, req:f.required ? '*' : '', hint:f.hint || '',
+        isText:f.type === 'TEXT', isNumber:f.type === 'NUMBER', isSelect:f.type === 'SELECT',
+        isRange:f.type === 'DATE_RANGE', isFile:f.type === 'FILE', isTextarea:f.type === 'TEXTAREA',
+        value: v === undefined ? '' : v,
+        from: (v && v.from) || '', to: (v && v.to) || '',
+        fileName: v ? String(v) : 'Прикрепить файл',
+        onInput: (e) => this.setField(f.key, e.target.value),
+        onInc: () => this.setField(f.key, Math.min(f.max || 9, (Number(v) || 0) + 1)),
+        onDec: () => this.setField(f.key, Math.max(f.min || 0, (Number(v) || 1) - 1)),
+        onFrom: (e) => this.setField(f.key, Object.assign({}, v, { from:e.target.value })),
+        onTo: (e) => this.setField(f.key, Object.assign({}, v, { to:e.target.value })),
+        onAttach: () => this.setField(f.key, f.key + '_' + (f.key === 'photo' ? 'foto.jpg' : 'document.pdf')),
+        options:(f.options || []).map(o => ({
+          label:o, onPick: () => this.setField(f.key, o),
+          bg: v === o ? '#0804FF' : '#FFFFFF', fg: v === o ? '#FFFFFF' : '#000000', bd: v === o ? '#0804FF' : '#CCCCCC'
+        }))
+      };
+    });
+
+    let d = { stages:[], data:[], actions:[] };
+    if (app) {
+      const tt = typeOf(app.typeCode); const b = badge(app.status);
+      const acts = [];
+      if (role === 'STUDENT') {
+        if (app.status === 'NEEDS_FIX') acts.push({ label:'Отправить повторно', bg:'#0804FF', fg:'#fff', bd:'#0804FF', onRun:() => this.resubmit(app.id) });
+        if (app.status === 'AWAITING_SIGNATURE') {
+          acts.push({ label:'Скачать PDF заявления', bg:'#fff', fg:'#000', bd:'#CCCCCC', onRun:() => this.toast('PDF сформирован: A4, поля 20 мм') });
+          acts.push({ label:'Загрузить подписанный скан', bg:'#0804FF', fg:'#fff', bd:'#0804FF', onRun:() => this.uploadScan(app.id) });
+        }
+        if (['IN_REVIEW','NEEDS_FIX','SUBMITTED'].indexOf(app.status) >= 0) acts.push({ label:'Отменить заявку', bg:'#fff', fg:'#F23838', bd:'#F23838', onRun:() => this.cancel(app.id) });
+      } else if (role === 'STAFF') {
+        const act = app.stages.find(x => x.status === 'ACTIVE');
+        if (act) {
+          acts.push({ label:'Согласовать этап «' + act.name + '»', bg:'#0804FF', fg:'#fff', bd:'#0804FF', onRun:() => this.approve(app.id) });
+          acts.push({ label: s.commenting ? 'Подтвердить возврат' : 'Вернуть на доработку', bg:'#fff', fg:'#000', bd:'#CCCCCC', onRun:() => this.returnFix(app.id) });
+        }
+        if (app.status === 'READY') acts.push({ label:'Подтвердить выдачу', bg:'#000', fg:'#fff', bd:'#000', onRun:() => this.issue(app.id) });
+      }
+      d = {
+        number:app.number, title:tt.name, badge:b[0], badgeBg:b[1], badgeFg:b[2],
+        author: role === 'STUDENT' ? app.created + ' · ' + (app.group || '') : app.author + ' · ' + app.group + ', ' + app.course + ' курс',
+        hasNote:!!app.note, note:app.note || '', noteBg:'#FFF6EC', noteBd:'#E0B27A', noteFg:'#000',
+        hasCell:app.status === 'READY' && !!app.cell,
+        cellCode:app.cell || '', pickup:app.pickup || '',
+        cellNote:'Первый этаж, холл главного корпуса. Хранится 7 дней, до 19.03.2026.',
+        stages:app.stages.map((x, i) => ({
+          name:x.name,
+          meta: x.status === 'APPROVED' ? 'Согласовано ' + x.acted + ' · ' + x.by
+              : x.status === 'ACTIVE' ? 'Сейчас здесь · ' + x.dept + ' · норматив ' + x.sla + ' дн.'
+              : x.status === 'RETURNED' ? 'Возвращено · ' + x.dept
+              : 'Ожидает · ' + x.dept,
+          comment:x.comment,
+          color: x.status === 'APPROVED' ? '#0804FF' : x.status === 'ACTIVE' ? '#0804FF' : x.status === 'RETURNED' ? '#F23838' : '#CCCCCC',
+          fill: x.status === 'APPROVED' ? '#0804FF' : x.status === 'RETURNED' ? '#F23838' : '#FFFFFF',
+          line: i < app.stages.length - 1,
+          lineColor: x.status === 'APPROVED' ? '#0804FF' : '#EEEEEE'
+        })),
+        data:Object.keys(app.data || {}).map(k => {
+          const fd = tt.fields.find(f => f.key === k);
+          const v = app.data[k];
+          return { k: fd ? fd.label : k, v: v && v.from ? fmt(v.from) + ' — ' + fmt(v.to) : String(v) };
+        }),
+        actions:acts, commenting:s.commenting, commentDraft:s.commentDraft
+      };
+    }
+
+    const cellsArr = s.cells;
+    const groups = ['Все группы','ИС-21','ПМ-32','ЭК-11'];
+    const registrySrc = s.apps.filter(a => a.typeCode === 'absence' && a.status === 'ISSUED' && (s.group === 'Все группы' || a.group === s.group));
+    const meRec = ME[role] || ME.STUDENT;
+    const totals = TYPES.map(t2 => ({ name:t2.name, total:s.apps.filter(a => a.typeCode === t2.code).length + (t2.code === 'certificate' ? 121 : t2.code === 'absence' ? 64 : t2.code === 'dormitory' ? 38 : 19) }));
+    const maxT = Math.max.apply(null, totals.map(x => x.total));
+
+    return {
+      logoW: 190,
+      isLogin: !role,
+      authed: !!role,
+      roleTabs:[['STUDENT','Студент'],['STAFF','Сотрудник'],['TEACHER','Преподаватель'],['ADMIN','Администратор']].map(([r, l]) => ({
+        label:l, onPick: () => this.pickRole(r),
+        bg: role === r ? '#0804FF' : '#FFFFFF', fg: role === r ? '#FFFFFF' : '#000000', bd: role === r ? '#0804FF' : '#CCCCCC'
+      })),
+      loginRoles:[['STUDENT','Студент','a.ivanova@student.local'],['STAFF','Сотрудник деканата','s.petrov@university.local'],['TEACHER','Преподаватель','m.sokolova@university.local'],['ADMIN','Администратор','admin@university.local']]
+        .map(([r, l, e]) => ({ label:l, email:e, onPick: () => this.pickRole(r) })),
+
+      hdrKicker:hdr[0], hdrTitle:hdr[1],
+      hdrBack: !!backScreens[scr], onBack: () => this.go(backScreens[scr] || 'home'),
+      hdrBell: role === 'STUDENT' || role === 'STAFF', onBell: () => this.go('notifications'),
+      hasUnread:unread,
+      pageBg: scr === 'log' ? '#F9F9F9' : '#FFFFFF',
+      showTabs: tabScreens.indexOf(scr) >= 0,
+      tabs:(tabDefs[role] || []).map(([k, l]) => ({
+        label:l, onPick: () => this.go(k),
+        bar: scr === k ? '#0804FF' : 'transparent',
+        fg: scr === k ? '#000000' : '#99A2AD',
+        dot: k === 'notifications' && unread
+      })),
+      toast:s.toast,
+
+      isLoading:s.loading && (scr === 'home' || scr === 'queue'),
+      skeletons:[{}, {}, {}],
+      isList: (scr === 'home' || scr === 'queue') && !s.loading,
+      listItems:listSource.map(mkItem),
+      listEmpty:listSource.length === 0,
+      emptyTitle: scr === 'queue' ? 'Очередь пуста' : 'Заявок пока нет',
+      emptyText: scr === 'queue' ? 'Новые заявки появятся здесь, как только этап дойдёт до вашего подразделения.' : 'Выберите тип в каталоге — форма соберётся по схеме полей автоматически.',
+      emptyCta: scr === 'queue' ? null : 'Открыть каталог',
+      onEmptyCta: () => this.go('catalog'),
+
+      isCatalog:scr === 'catalog',
+      catalog:TYPES.map(t2 => ({
+        name:t2.name, desc:t2.desc, abbr:t2.abbr, onOpen: () => this.openType(t2.code),
+        iconBg: t2.accessRule ? '#EEEEEE' : '#E1E0FF', iconFg: t2.accessRule ? '#818C99' : '#0804FF',
+        tag: t2.usesCell ? 'выдача через ячейку' : t2.usesBooking ? 'бронирование места' : t2.requiresSignature ? 'нужна подпись' : t2.route.length + ' этап(а) согласования',
+        tagFg: t2.accessRule ? '#818C99' : '#0804FF'
+      })),
+
+      isDenied:scr === 'denied',
+      denyMessage: t && t.accessRule ? t.accessRule.denyMessage : '',
+
+      isForm:scr === 'form',
+      formHint: t ? t.name + ' — форма собрана по fields_schema типа. Проверка обязательных полей одинаковая на клиенте и на сервере.' : '',
+      formFields,
+      formRoute:(t ? t.route : []).map((r, i) => ({ num:i + 1, name:r.name, sla:r.auto ? 'авто' : r.sla + ' дн.' })),
+      submitLabel:'Подать заявку',
+      submitBg:'#0804FF', submitFg:'#FFFFFF',
+      formError:null,
+      onSubmit:this.submit,
+
+      isDetail:scr === 'detail', d,
+      onComment:(e) => this.setState({ commentDraft:e.target.value }),
+
+      isCells:scr === 'cells',
+      cellStats:[
+        { n:cellsArr.filter(c => c.status === 'FREE').length, label:'свободно', color:'#0804FF' },
+        { n:cellsArr.filter(c => c.status === 'OCCUPIED').length, label:'занято', color:'#000000' },
+        { n:cellsArr.filter(c => c.status === 'MAINTENANCE').length, label:'обслуживание', color:'#818C99' }
+      ],
+      cellGrid:cellsArr.map(c => ({
+        code:c.code,
+        state: c.status === 'FREE' ? 'свободна' : c.status === 'OCCUPIED' ? c.pickup : 'сервис',
+        bg: c.status === 'OCCUPIED' ? '#0804FF' : c.status === 'MAINTENANCE' ? '#EEEEEE' : '#FFFFFF',
+        fg: c.status === 'OCCUPIED' ? '#FFFFFF' : c.status === 'MAINTENANCE' ? '#818C99' : '#000000',
+        bd: c.status === 'OCCUPIED' ? '#0804FF' : '#CCCCCC',
+        onTap: () => {
+          if (c.status !== 'OCCUPIED') { this.toast('Ячейка ' + c.code + ' · ' + (c.status === 'FREE' ? 'свободна' : 'на обслуживании')); return; }
+          const a = s.apps.find(x => x.id === c.appId);
+          if (a) this.go('detail', { appId:a.id }); else this.toast('Ячейка ' + c.code + ' · код ' + c.pickup);
+        }
+      })),
+      cellsHint:'Занятая ячейка открывает заявку. Выдача подтверждается вручную; истёкший срок хранения только помечается, ячейка не освобождается автоматически.',
+
+      isNotifications:scr === 'notifications',
+      notes:myNotes.map(n => ({
+        title:n.title, body:n.body, time:n.time,
+        bg:n.read ? '#FFFFFF' : '#F5F5F5', bd:n.read ? '#EEEEEE' : '#CCCCCC',
+        onOpen: () => {
+          this.setState({ notes:s.notes.map(x => x.id === n.id ? Object.assign({}, x, { read:true }) : x) });
+          const a = s.apps.find(x => x.id === n.appId);
+          if (a) this.go('detail', { appId:a.id });
+        }
+      })),
+      notesEmpty:myNotes.length === 0,
+      onReadAll: () => { this.setState({ notes:s.notes.map(x => Object.assign({}, x, { read:true })) }); this.toast('Все уведомления прочитаны'); },
+
+      isRegistry:scr === 'registry',
+      groupFilters:groups.map(g => ({
+        label:g, onPick: () => this.setState({ group:g }),
+        bg: s.group === g ? '#0804FF' : '#FFFFFF', fg: s.group === g ? '#FFFFFF' : '#000000', bd: s.group === g ? '#0804FF' : '#CCCCCC'
+      })),
+      registry:registrySrc.map(a => ({
+        name:a.author, group:a.group + ' · ' + a.course + ' курс',
+        period:(a.data.period && a.data.period.from) ? fmt(a.data.period.from) + ' — ' + fmt(a.data.period.to) : String(a.data.period || '—'),
+        meta:'№ ' + a.number + ' · ' + (a.data.reason || '') + ' · согласовано: ' + a.stages.map(x => x.dept).join(', ')
+      })),
+      onExport: () => this.toast('absences_' + (s.group === 'Все группы' ? 'all' : s.group) + '.csv выгружен'),
+
+      isTypes:scr === 'types',
+      adminTypes:TYPES.map(t2 => ({
+        name:t2.name, code:t2.code, onOpen: () => this.go('typeEditor', { editorCode:t2.code }),
+        meta:t2.fields.length + ' пол(я) · ' + t2.route.length + ' этап(а) · ' + (t2.accessRule ? 'access_rule задан' : 'доступен всем')
+      })),
+      onNewType: () => this.toast('Черновик типа создан — заполните схему полей и маршрут'),
+
+      isTypeEditor:scr === 'typeEditor',
+      editorFlags:['uses_cell','uses_booking','requires_signature'].map(k => {
+        const t3 = typeOf(s.editorCode);
+        const on = k === 'uses_cell' ? !!t3.usesCell : k === 'uses_booking' ? !!t3.usesBooking : !!t3.requiresSignature;
+        return { label:k + (on ? ' · true' : ' · false'), bg:on ? '#0804FF' : '#FFFFFF', fg:on ? '#FFFFFF' : '#818C99', bd:on ? '#0804FF' : '#CCCCCC' };
+      }),
+      editorFields:typeOf(s.editorCode).fields.map(f => ({ label:f.label, key:f.key + (f.required ? ' · required' : ''), type:f.type })),
+      editorRoute:typeOf(s.editorCode).route.map((r, i) => ({ num:i + 1, name:r.name, dept:r.dept, sla:r.auto ? 'авто' : r.sla + ' раб. дн.' })),
+
+      isAnalytics:scr === 'analytics',
+      kpis:[{ n:s.apps.length + 262, label:'заявок за семестр' }, { n:'2,4', label:'средний срок, дн.' }, { n:cellsArr.filter(c => c.status === 'OCCUPIED').length + '/' + cellsArr.length, label:'ячейки заняты' }],
+      byType:totals.map(x => ({ name:x.name, total:x.total, w:Math.round(x.total / maxT * 100) + '%' })),
+      bottlenecks:[{ dept:'Профком', days:'6,2 дн.', color:'#F23838' }, { dept:'Комиссия по заселению', days:'5,1 дн.', color:'#F23838' }, { dept:'Деканат', days:'1,8 дн.', color:'#0804FF' }],
+
+      isLog:scr === 'log',
+      log:[
+        { action:'application.submitted', payload:'№2026-000122 · certificate', meta:'Иванова А. С. · 12.03.2026 09:14 · 10.8.0.34' },
+        { action:'application.stage_approved', payload:'stage «Деканат» · from IN_REVIEW to IN_REVIEW', meta:'Петров С. И. · 12.03.2026 09:41' },
+        { action:'cell.assigned', payload:'A-04 · pickup_code скрыт в журнале', meta:'система · 12.03.2026 09:41' },
+        { action:'application.stage_returned', payload:'№2026-000121 · comment: 62 симв.', meta:'Смирнова Е. В. · 11.03.2026 16:02' },
+        { action:'booking.promoted', payload:'Заезд №3 · queue_position 1 → CONFIRMED', meta:'система · 11.03.2026 12:20' },
+        { action:'user.login_failed', payload:'email a.ivanov@student.local · попытка 3 из 5', meta:'— · 11.03.2026 08:55 · 10.8.0.77' }
+      ],
+
+      isProfile:scr === 'profile',
+      me:{
+        name:meRec.name, meta:meRec.meta,
+        chips:[{ label:role === 'STUDENT' ? 'STUDENT' : role }, { label:meRec.email }, { label: role === 'STUDENT' ? 'бюджет' : 'сотрудник' }],
+        rows:[
+          { k:'Роль', v:role },
+          { k:role === 'STUDENT' ? 'Студенческий' : 'Подразделение', v: role === 'STUDENT' ? '№ 21-04512' : (meRec.dept || '—') },
+          { k:'Активных заявок', v:String(mineApps.filter(a => ['IN_REVIEW','NEEDS_FIX','READY','AWAITING_SIGNATURE'].indexOf(a.status) >= 0).length) },
+          { k:'Уведомления', v:'IN_APP + EMAIL' }
+        ]
+      },
+      wipeLabel:s.wiped ? 'Вернуть демо-данные' : 'Очистить демо-данные',
+      onWipe: () => { this.setState({ wiped:!s.wiped }); this.toast(s.wiped ? 'Демо-данные восстановлены' : 'Данные очищены — видны пустые состояния'); },
+      onLogout: () => this.setState({ role:null, screen:'login' })
+    };
+  }
+}
+</script>
+</body>
+</html>

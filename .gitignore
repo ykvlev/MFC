@@ -1,0 +1,31 @@
+node_modules/
+dist/
+build/
+coverage/
+.env
+.env.local
+*.log
+
+# Prisma
+apps/api/prisma/*.db
+
+# iOS
+clients/ios/**/xcuserdata/
+clients/ios/**/*.xcuserstate
+clients/ios/**/DerivedData/
+clients/ios/Pods/
+
+# Android
+clients/android/.gradle/
+clients/android/local.properties
+clients/android/**/build/
+*.keystore
+!debug.keystore
+
+# Tauri
+clients/desktop/src-tauri/target/
+clients/desktop/dist/
+
+# OS
+.DS_Store
+Thumbs.db

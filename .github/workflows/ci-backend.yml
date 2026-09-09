@@ -1,0 +1,44 @@
+name: ci-backend
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: okno
+          POSTGRES_PASSWORD: okno
+          POSTGRES_DB: okno
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U okno" --health-interval 5s
+          --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql://okno:okno@localhost:5432/okno
+      REDIS_URL: redis://localhost:6379
+      JWT_ACCESS_SECRET: ci-access-secret-xxxxxxxx
+      JWT_REFRESH_SECRET: ci-refresh-secret-xxxxxxx
+      S3_ENDPOINT: http://localhost:9000
+      S3_BUCKET: okno-files
+      S3_ACCESS_KEY: okno
+      S3_SECRET_KEY: okno-secret
+      SEED_ADMIN_PASSWORD: ci-admin-password
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 10 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @edinoe-okno/api prisma:generate
+      - run: pnpm --filter @edinoe-okno/shared build
+      - run: pnpm -r lint
+      - run: pnpm -r test
+      - run: pnpm --filter @edinoe-okno/api prisma:deploy
+      - run: pnpm --filter @edinoe-okno/api build
