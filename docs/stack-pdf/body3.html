@@ -1,0 +1,128 @@
+<!-- ========== 5. ФУНКЦИОНАЛ ========== -->
+<div class="page">
+  <div class="phead">
+    <div><div class="kicker">раздел 04</div><div class="h1">функционал</div></div>
+    <div class="pnum">05</div>
+  </div>
+
+  <div class="card tint mb">
+    <p><b>Ключевой принцип.</b> Система — это один движок заявок с конфигурируемыми
+      типами, а не набор независимых модулей. Тип заявки — это запись конфигурации:
+      схема полей, маршрут согласования, правило доступа, флаги спецмодулей.
+      Новый тип добавляется через админку и работает без единой правки кода ядра.</p>
+  </div>
+
+  <div class="grid g2 mb">
+    <div class="card">
+      <div class="h2">Ядро заявок</div>
+      <ul>
+        <li>Динамическая форма по <code>fields_schema</code></li>
+        <li>Маршруты с копированием этапов при подаче</li>
+        <li>Статусная машина из 10 статусов</li>
+        <li>Возврат на доработку без пересогласования</li>
+        <li>Автоэтапы по <code>access_rule</code></li>
+        <li>Журнал событий по каждому переходу</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="h2">Модуль ячеек</div>
+      <ul>
+        <li>Поиск свободной ячейки <code>FOR UPDATE SKIP LOCKED</code></li>
+        <li>Код получения из шести цифр, срок хранения</li>
+        <li>Подтверждение выдачи сотрудником</li>
+        <li>Драйвер замка через DI — задел под электронные</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="h2">Бронирование мест</div>
+      <ul>
+        <li>Блокировка строки периода — квота не превышается</li>
+        <li>Лист ожидания с позициями в очереди</li>
+        <li>Автоповышение при отмене чужой брони</li>
+        <li>Запрет пересекающихся броней</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="h2">Документы и подпись</div>
+      <ul>
+        <li>PDF из HTML-шаблона, A4, поля 20 мм</li>
+        <li>Загрузка подписанного скана</li>
+        <li>Реестр освобождённых с выгрузкой CSV</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="kicker mb" style="border-top:1px solid var(--grey);padding-top:12px">расширения сверх технического задания</div>
+  <div class="grid g3">
+    <div class="card">
+      <div class="h2" style="font-size:12pt">Обходной лист</div>
+      <p class="small" style="color:var(--black)">Параллельные этапы маршрута: пять
+        отделов согласуют одновременно, финальный этап открывается только когда
+        закрыты все.</p>
+    </div>
+    <div class="card">
+      <div class="h2" style="font-size:12pt">Объявления</div>
+      <p class="small" style="color:var(--black)">Рассылка деканата на всех, курс
+        или группу. Каждому адресату — уведомление и пуш.</p>
+    </div>
+    <div class="card">
+      <div class="h2" style="font-size:12pt">Запись на приём</div>
+      <p class="small" style="color:var(--black)">Приёмные окна с разбивкой на слоты,
+        бронирование под блокировкой строки окна.</p>
+    </div>
+  </div>
+
+  <div class="foot"><span class="small">Единое окно студента · технологический стек</span><span class="pnum">05</span></div>
+</div>
+
+<!-- ========== 6. РЕПОЗИТОРИЙ И СТАТУС ========== -->
+<div class="page">
+  <div class="phead">
+    <div><div class="kicker">раздел 05</div><div class="h1">репозиторий</div></div>
+    <div class="pnum">06</div>
+  </div>
+
+  <p class="lead mb">Монорепозиторий на pnpm workspaces. Нативные клиенты живут
+    рядом и потребляют тот же контракт.</p>
+
+  <div class="card soft mb">
+<pre style="font-family:'Stolzl Light',monospace;font-size:8.5pt;line-height:1.65;white-space:pre">edinoe-okno/
+├─ packages/shared/      TypeScript · типы, статусная машина, Zod-схемы
+├─ apps/api/             NestJS · движок, модули, Prisma, seed
+├─ clients/
+│   ├─ desktop/          Tauri 2 (Rust) + React · рабочее место
+│   ├─ ios/              Swift · SwiftUI
+│   └─ android/          Kotlin · Jetpack Compose
+├─ design/               шрифты и токены РСО, прототип
+├─ docs/                 архитектура, API, деплой, ADR
+└─ docker-compose.yml    Postgres · Redis · MinIO</pre>
+  </div>
+
+  <div class="h2">Готовность</div>
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>компонент</th><th>состояние</th></tr>
+      <tr><td class="k">Бэкенд</td><td>Все этапы ТЗ реализованы, сборка и типизация зелёные</td></tr>
+      <tr><td class="k">Общий код</td><td>Готов, покрыт тестами</td></tr>
+      <tr><td class="k">Десктоп</td><td>Все экраны собраны, фронт билдится; установщики — на машине с Rust</td></tr>
+      <tr><td class="k">iOS</td><td>Каркас и план; сборка требует macOS и Xcode</td></tr>
+      <tr><td class="k">Android</td><td>Каркас и план; сборка требует Android SDK</td></tr>
+    </table>
+  </div>
+
+  <div class="grid g4">
+    <div class="card stat"><div class="n">40</div><div class="l">юнит-тестов</div></div>
+    <div class="card stat"><div class="n">14</div><div class="l">таблиц<br>в модели данных</div></div>
+    <div class="card stat"><div class="n">8</div><div class="l">типов заявок<br>в seed</div></div>
+    <div class="card stat"><div class="n">4</div><div class="l">роли<br>пользователей</div></div>
+  </div>
+
+  <div class="card blue mt">
+    <div class="kicker on-blue">критерий качества архитектуры</div>
+    <p style="margin-top:6px;opacity:.95">Новый тип заявки с собственными полями
+      и маршрутом создаётся через админку и работает без единой правки кода ядра.
+      Это главный аргумент на защите проекта.</p>
+  </div>
+
+  <div class="foot"><span class="small">Единое окно студента · технологический стек</span><span class="pnum">06</span></div>
+</div>

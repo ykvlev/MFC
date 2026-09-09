@@ -1,0 +1,121 @@
+<!-- ========== 3. БЭКЕНД ========== -->
+<div class="page">
+  <div class="phead">
+    <div><div class="kicker">раздел 02</div><div class="h1">бэкенд</div></div>
+    <div class="pnum">03</div>
+  </div>
+
+  <p class="lead mb"><code>apps/api</code> — реализован строго по техническому заданию, раздел 2.1.</p>
+
+  <div class="tbl-wrap tight">
+    <table>
+      <tr><th>слой</th><th>технология</th><th>зачем</th></tr>
+      <tr><td class="k">Язык</td><td>TypeScript 5.6</td><td>Общие типы с фронтом, один язык на проект</td></tr>
+      <tr><td class="k">Рантайм</td><td>Node.js 20 LTS</td><td>Стабильность</td></tr>
+      <tr><td class="k">Фреймворк</td><td>NestJS 10</td><td>Модульность, DI, guards и pipes ложатся на задачу</td></tr>
+      <tr><td class="k">ORM</td><td>Prisma 5</td><td>Декларативная схема, миграции, типобезопасность</td></tr>
+      <tr><td class="k">База данных</td><td>PostgreSQL 16</td><td>JSONB для схем полей, транзакции с блокировками</td></tr>
+      <tr><td class="k">Кеш и очередь</td><td>Redis 7</td><td>Сессии, фоновые задачи</td></tr>
+      <tr><td class="k">Планировщик</td><td>@nestjs/schedule</td><td>Cron: просроченные ячейки, напоминания по SLA</td></tr>
+      <tr><td class="k">Файлы</td><td>MinIO (S3)</td><td>Драйвер сменный через DI, локально в Docker</td></tr>
+      <tr><td class="k">Аутентификация</td><td>JWT access + refresh</td><td>Access 15 мин, refresh 30 дней, ротация</td></tr>
+      <tr><td class="k">Пароли</td><td>argon2id</td><td>—</td></tr>
+      <tr><td class="k">Валидация</td><td>Zod 3</td><td>Одна схема на сервер и клиент</td></tr>
+      <tr><td class="k">Генерация PDF</td><td>Puppeteer</td><td>HTML-шаблон → A4, поля 20 мм</td></tr>
+      <tr><td class="k">Документация API</td><td>Swagger / OpenAPI</td><td>Автогенерация из декораторов</td></tr>
+      <tr><td class="k">Тесты</td><td>Vitest + Supertest</td><td>Юнит и интеграционные</td></tr>
+      <tr><td class="k">Инфраструктура</td><td>Docker Compose</td><td>Postgres + Redis + MinIO одной командой</td></tr>
+      <tr><td class="k">CI</td><td>GitHub Actions</td><td>lint → тесты → миграции → сборка</td></tr>
+    </table>
+  </div>
+
+  <div class="h2">Безопасность</div>
+  <div class="grid g2 tight-cards">
+    <div class="card"><p><b>Права — только на сервере.</b> <code>RolesGuard</code> по роли,
+      <code>ApplicationAccessGuard</code> по владению заявкой или участию подразделения в маршруте.</p></div>
+    <div class="card"><p><b>Файлы.</b> Проверка расширения <i>и</i> магических байт, лимит размера,
+      имя на диске — UUID, отдача только через контроллер.</p></div>
+    <div class="card"><p><b>Транзакции.</b> Любая смена статуса — одна транзакция вместе с записью
+      в журнал событий и созданием уведомления.</p></div>
+    <div class="card"><p><b>Журнал неизменяем.</b> Роль приложения лишена UPDATE и DELETE
+      на таблице <code>event_log</code>.</p></div>
+  </div>
+
+  <div class="foot"><span class="small">Единое окно студента · технологический стек</span><span class="pnum">03</span></div>
+</div>
+
+<!-- ========== 4. КЛИЕНТЫ ========== -->
+<div class="page">
+  <div class="phead">
+    <div><div class="kicker">раздел 03</div><div class="h1">клиенты</div></div>
+    <div class="pnum">04</div>
+  </div>
+
+  <div class="card blue mb">
+    <div class="kicker on-blue">десктоп · рабочее место сотрудника</div>
+    <div style="font-family:'Stolzl',sans-serif;font-weight:500;font-size:17pt;margin:6px 0">
+      Tauri 2 + React
+    </div>
+    <p style="opacity:.92">
+      Оболочка на Rust, интерфейс на TypeScript. Установщики <code style="background:rgba(255,255,255,.18);color:#fff">.msi</code>
+      и <code style="background:rgba(255,255,255,.18);color:#fff">.dmg</code>, автообновление,
+      печать PDF через системный диалог, refresh-токен в защищённом хранилище ОС.
+      Для тех, кто оформляет справки: широкие таблицы, мышь и клавиатура.
+    </p>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>слой</th><th>технология</th></tr>
+      <tr><td class="k">Оболочка</td><td>Tauri 2 — ядро на Rust</td></tr>
+      <tr><td class="k">Интерфейс</td><td>React 18 + TypeScript + Vite 5</td></tr>
+      <tr><td class="k">Роутинг и данные</td><td>React Router 6, TanStack Query 5</td></tr>
+      <tr><td class="k">Формы</td><td>React Hook Form + Zod</td></tr>
+      <tr><td class="k">Стили</td><td>Tailwind CSS, токены РСО</td></tr>
+    </table>
+  </div>
+
+  <div class="grid g2">
+    <div class="card">
+      <div class="kicker">мобильный клиент</div>
+      <div class="h2" style="margin-top:6px">iOS</div>
+      <table style="margin-top:4px">
+        <tr><td class="k" style="width:42%">Язык</td><td>Swift 5.9</td></tr>
+        <tr><td class="k">UI</td><td>SwiftUI, цель iOS 16</td></tr>
+        <tr><td class="k">Сеть</td><td>swift-openapi-generator</td></tr>
+        <tr><td class="k">Токены</td><td>Keychain</td></tr>
+        <tr><td class="k">Пуши</td><td>APNs</td></tr>
+        <tr><td class="k">Публикация</td><td>TestFlight → App Store</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <div class="kicker">мобильный клиент</div>
+      <div class="h2" style="margin-top:6px">Android</div>
+      <table style="margin-top:4px">
+        <tr><td class="k" style="width:42%">Язык</td><td>Kotlin</td></tr>
+        <tr><td class="k">UI</td><td>Jetpack Compose, minSdk 26</td></tr>
+        <tr><td class="k">Сеть</td><td>Retrofit + kotlinx.serialization</td></tr>
+        <tr><td class="k">Токены</td><td>EncryptedSharedPreferences</td></tr>
+        <tr><td class="k">Пуши</td><td>Firebase Cloud Messaging</td></tr>
+        <tr><td class="k">Публикация</td><td>Internal track → Google Play</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card soft mt">
+    <div class="h2">Дизайн-система РСО</div>
+    <p class="mb">Общая для всех трёх клиентов. Палитра из четырёх значений, контурные
+      карточки без единой тени, трекинг ноль, движение 120–200 мс только по прозрачности и цвету.</p>
+    <div>
+      <span class="chip b">#0804FF синий</span>
+      <span class="chip">#FFFFFF белый</span>
+      <span class="chip">#EEEEEE серый</span>
+      <span class="chip" style="background:#000;color:#fff;border-color:#000">#000000 чёрный</span>
+      <span class="chip t">Actay Wide — титульный</span>
+      <span class="chip t">Stolzl — заголовки и числа</span>
+      <span class="chip t">Onest — текст</span>
+    </div>
+  </div>
+
+  <div class="foot"><span class="small">Единое окно студента · технологический стек</span><span class="pnum">04</span></div>
+</div>

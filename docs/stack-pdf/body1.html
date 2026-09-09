@@ -1,0 +1,100 @@
+<!-- ========== 1. ОБЛОЖКА ========== -->
+<div class="page cover">
+  <div>
+    <div class="kicker on-blue">информационная система вуза</div>
+    <div class="title" style="margin-top:14px">единое окно<br>студента</div>
+  </div>
+
+  <div>
+    <div style="font-family:'Actay Wide',sans-serif;font-weight:700;font-size:20pt;text-transform:lowercase;line-height:1">
+      технологический стек
+    </div>
+    <p class="lead" style="max-width:110mm;margin-top:12px;opacity:.92">
+      Один движок заявок с конфигурируемыми типами, модули ячеек выдачи,
+      бронирования и приёмных слотов. Единый бэкенд, три клиента,
+      один контракт OpenAPI.
+    </p>
+  </div>
+
+  <div class="toc">
+    <div class="row"><span class="n">01</span><span class="t">Архитектура</span></div>
+    <div class="row"><span class="n">04</span><span class="t">Функционал</span></div>
+    <div class="row"><span class="n">02</span><span class="t">Бэкенд</span></div>
+    <div class="row"><span class="n">05</span><span class="t">Репозиторий и готовность</span></div>
+    <div class="row"><span class="n">03</span><span class="t">Клиенты</span></div>
+    <div class="row"></div>
+  </div>
+
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <span class="chip" style="background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.45);color:#fff">TypeScript</span>
+    <span class="chip" style="background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.45);color:#fff">Rust</span>
+    <span class="chip" style="background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.45);color:#fff">Swift</span>
+    <span class="chip" style="background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.45);color:#fff">Kotlin</span>
+    <span class="chip" style="background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.45);color:#fff">PostgreSQL</span>
+  </div>
+
+  <div style="display:flex;justify-content:space-between;align-items:baseline;
+              border-top:1px solid rgba(255,255,255,.35);padding-top:10px">
+    <div class="kicker on-blue">версия документа 1.0</div>
+    <div class="num" style="font-size:9pt;opacity:.8">__DATE__</div>
+  </div>
+</div>
+
+<!-- ========== 2. АРХИТЕКТУРА ========== -->
+<div class="page">
+  <div class="phead">
+    <div><div class="kicker">раздел 01</div><div class="h1">архитектура</div></div>
+    <div class="pnum">02</div>
+  </div>
+
+  <p class="lead mb">
+    Клиенты не содержат бизнес-логики: каждый эндпоинт проверяет права на сервере.
+    Модели клиентов генерируются из одного <code>openapi.json</code>, поэтому контракт
+    не может разъехаться между платформами.
+  </p>
+
+  <div class="diagram">
+    <div class="railtxt">клиентский слой</div>
+    <div class="tier g3">
+      <div class="node"><div class="nm">iOS</div><div class="lg">Swift · SwiftUI</div></div>
+      <div class="node"><div class="nm">Android</div><div class="lg">Kotlin · Compose</div></div>
+      <div class="node"><div class="nm">Десктоп</div><div class="lg">Rust · Tauri + React</div></div>
+    </div>
+
+    <div class="arrows">↓ ↓ ↓</div>
+    <div class="railtxt">HTTPS · Bearer access-token · модели из openapi.json</div>
+    <div class="arrows">↓ ↓ ↓</div>
+
+    <div class="node b" style="padding:14px">
+      <div class="nm" style="font-size:12pt">NestJS API — <code style="background:rgba(255,255,255,.18);color:#fff">/api/v1</code></div>
+      <div class="lg">движок заявок · статусная машина · маршруты · guards · журнал событий</div>
+    </div>
+
+    <div class="arrows">↓ ↓ ↓</div>
+    <div class="railtxt">слой хранения</div>
+    <div class="tier g3">
+      <div class="node t"><div class="nm">PostgreSQL 16</div><div class="lg">данные · JSONB · блокировки</div></div>
+      <div class="node t"><div class="nm">Redis 7</div><div class="lg">кеш · очереди</div></div>
+      <div class="node t"><div class="nm">MinIO</div><div class="lg">файлы, S3-совместимо</div></div>
+    </div>
+  </div>
+
+  <div class="card soft mt">
+    <div class="h2">packages/shared — общий источник правды</div>
+    <p>
+      Типы и перечисления, статусная машина <code>ALLOWED_TRANSITIONS</code>,
+      матрица прав, Zod-схемы <code>fields_schema</code> и <code>access_rule</code>,
+      генератор формы <code>buildFormSchema</code>. Подключается напрямую бэкендом
+      и десктопом; для iOS и Android та же логика портирована, а контракт данных
+      приходит из OpenAPI.
+    </p>
+  </div>
+
+  <div class="grid g3 mt">
+    <div class="card stat"><div class="n">4</div><div class="l">языка<br>в проекте</div></div>
+    <div class="card stat"><div class="n">3</div><div class="l">клиентских<br>приложения</div></div>
+    <div class="card stat"><div class="n">1</div><div class="l">контракт<br>OpenAPI</div></div>
+  </div>
+
+  <div class="foot"><span class="small">Единое окно студента · технологический стек</span><span class="pnum">02</span></div>
+</div>
