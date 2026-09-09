@@ -10,8 +10,10 @@ object Routes {
     const val Notifications = "notifications"
     const val Profile = "profile"
     const val Detail = "applications/{id}"
+    const val NewApplication = "catalog/{typeId}/new"
 
     fun detail(id: String) = "applications/$id"
+    fun newApplication(typeId: String) = "catalog/$typeId/new"
 }
 
 data class Tab(val route: String, val label: String)

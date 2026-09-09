@@ -15,6 +15,8 @@ class OknoRepository @Inject constructor(private val api: OknoApi) {
 
     suspend fun types() = api.applicationTypes()
 
+    suspend fun type(id: String) = api.applicationType(id)
+
     suspend fun createAndSubmit(typeId: String, data: kotlinx.serialization.json.JsonObject): Application {
         val created = api.createApplication(CreateApplicationRequest(typeId, data))
         return api.submit(created.id)

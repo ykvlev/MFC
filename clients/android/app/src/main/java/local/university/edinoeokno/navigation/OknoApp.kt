@@ -21,6 +21,7 @@ import local.university.edinoeokno.feature.applications.ApplicationsListScreen
 import local.university.edinoeokno.feature.auth.AuthViewModel
 import local.university.edinoeokno.feature.auth.LoginScreen
 import local.university.edinoeokno.feature.catalog.CatalogScreen
+import local.university.edinoeokno.feature.catalog.NewApplicationScreen
 import local.university.edinoeokno.feature.cells.CellsScreen
 import local.university.edinoeokno.feature.notifications.NotificationsScreen
 import local.university.edinoeokno.feature.profile.ProfileScreen
@@ -92,7 +93,19 @@ fun OknoApp(authViewModel: AuthViewModel = hiltViewModel()) {
                         ApplicationsListScreen(scope = "queue") { navController.navigate(Routes.detail(it)) }
                     }
                     composable(Routes.Catalog) {
-                        CatalogScreen { navController.navigate(Routes.detail(it)) }
+                        CatalogScreen { typeId -> navController.navigate(Routes.newApplication(typeId)) }
+                    }
+                    composable(Routes.NewApplication) { entry ->
+                        val typeId = entry.arguments?.getString("typeId").orEmpty()
+                        NewApplicationScreen(
+                            typeId = typeId,
+                            onBack = { navController.popBackStack() },
+                            onSubmitted = { id ->
+                                navController.navigate(Routes.detail(id)) {
+                                    popUpTo(Routes.Catalog)
+                                }
+                            },
+                        )
                     }
                     composable(Routes.Cells) { CellsScreen() }
                     composable(Routes.Registry) { RegistryScreen() }

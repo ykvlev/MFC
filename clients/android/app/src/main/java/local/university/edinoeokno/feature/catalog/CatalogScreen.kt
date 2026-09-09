@@ -19,7 +19,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.JsonObject
 import local.university.edinoeokno.data.OknoRepository
 import local.university.edinoeokno.data.UiState
 import local.university.edinoeokno.designsystem.*
@@ -50,24 +49,20 @@ class CatalogViewModel @Inject constructor(
     fun dismissDenied() { _denied.value = null }
 
     /**
-     * Типы без обязательных полей подаются в один тап. Для типов с формой
-     * нужен экран динамической формы — он появится следующим шагом.
+     * Недоступный тип показывает denyMessage с сервера (ТЗ 4.4);
+     * доступный — открывает форму, собранную по fields_schema.
      */
-    fun submitSimple(type: ApplicationType, onCreated: (String) -> Unit) {
+    fun open(type: ApplicationType, onOpenForm: (String) -> Unit) {
         if (!type.available) {
             _denied.value = type.denyMessage ?: "Этот тип заявки вам недоступен"
             return
         }
-        viewModelScope.launch {
-            runCatching { repo.createAndSubmit(type.id, JsonObject(emptyMap())) }
-                .onSuccess { onCreated(it.id) }
-                .onFailure { _denied.value = it.userMessage() }
-        }
+        onOpenForm(type.id)
     }
 }
 
 @Composable
-fun CatalogScreen(viewModel: CatalogViewModel = hiltViewModel(), onOpen: (String) -> Unit) {
+fun CatalogScreen(viewModel: CatalogViewModel = hiltViewModel(), onOpenForm: (String) -> Unit) {
     val state by viewModel.state.collectAsState()
     val denied by viewModel.denied.collectAsState()
     LaunchedEffect(Unit) { viewModel.load() }
@@ -96,7 +91,7 @@ fun CatalogScreen(viewModel: CatalogViewModel = hiltViewModel(), onOpen: (String
                         }
                     }
                     items(s.value, key = { it.id }) { type ->
-                        TypeCard(type) { viewModel.submitSimple(type, onOpen) }
+                        TypeCard(type) { viewModel.open(type, onOpenForm) }
                     }
                     item { Spacer(Modifier.height(12.dp)) }
                 }
