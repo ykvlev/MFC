@@ -16,6 +16,6 @@
     "outDir": "./dist",
     "baseUrl": "./"
   },
-  "include": ["src", "prisma"],
+  "include": ["src", "prisma", "test"],
   "exclude": ["node_modules", "dist"]
 }

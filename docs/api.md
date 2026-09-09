@@ -36,3 +36,21 @@ GET  /api/v1/auth/me       -> User
 POST   /api/v1/devices     { platform: IOS|ANDROID, token } -> 204
 DELETE /api/v1/devices     { token } -> 204
 ```
+
+## Подпись (TZ-GAP endpoint)
+
+ТЗ §9 п.7 не задаёт эндпоинт явно:
+
+```
+POST /api/v1/applications/:id/confirm-signature   [STAFF|ADMIN]
+     -> AWAITING_SIGNATURE -> APPROVED -> ISSUED (или READY при uses_cell)
+```
+Требует загруженный `SIGNED_SCAN` и сотрудника подразделения последнего этапа.
+
+## Реализованные эндпоинты (этапы 1–10)
+
+auth (login/refresh/logout/me/change-password), admin/users (+import CSV),
+application-types (CRUD + route), applications (+stages approve/return/reject,
+files, document/generate, confirm-signature, history), cells, booking-periods,
+bookings, absences (+export), notifications, devices, admin/analytics/summary,
+admin/event-log, health. Полное описание — Swagger `/api/v1/docs`.

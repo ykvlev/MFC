@@ -40,5 +40,9 @@ jobs:
       - run: pnpm --filter @edinoe-okno/shared build
       - run: pnpm -r lint
       - run: pnpm -r test
-      - run: pnpm --filter @edinoe-okno/api prisma:deploy
+      # Первая миграция ещё не сгенерирована (нужен локальный запуск с БД).
+      # Для CI синхронизируем схему напрямую и прогоняем интеграционные тесты.
+      - run: pnpm --filter @edinoe-okno/api exec prisma db push --skip-generate
+      - run: pnpm --filter @edinoe-okno/api exec prisma db execute --file prisma/migrations/manual/0001_constraints.sql
+      - run: pnpm --filter @edinoe-okno/api test:integration
       - run: pnpm --filter @edinoe-okno/api build
