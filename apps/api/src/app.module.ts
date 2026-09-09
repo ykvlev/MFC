@@ -21,6 +21,8 @@ import { DocumentsModule } from './modules/documents/documents.module.js';
 import { AbsencesModule } from './modules/absences/absences.module.js';
 import { AnalyticsModule } from './modules/analytics/analytics.module.js';
 import { JobsModule } from './modules/jobs/jobs.module.js';
+import { AnnouncementsModule } from './modules/announcements/announcements.module.js';
+import { SlotsModule } from './modules/slots/slots.module.js';
 
 @Module({
   imports: [
@@ -45,6 +47,9 @@ import { JobsModule } from './modules/jobs/jobs.module.js';
     AbsencesModule,
     AnalyticsModule,
     JobsModule,
+    // Расширения сверх ТЗ
+    AnnouncementsModule,
+    SlotsModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: JwtAuthGuard },

@@ -18,6 +18,7 @@ const DEPARTMENTS = [
   'Отдел кадров студентов',
   'Бухгалтерия',
   'Комиссия по заселению',
+  'Библиотека',
 ];
 
 type SeedType = {
@@ -30,7 +31,13 @@ type SeedType = {
   usesCell?: boolean;
   usesBooking?: boolean;
   documentTemplate?: string;
-  route: Array<{ name: string; approverDepartment: string; slaDays: number | null; isAuto?: boolean }>;
+  route: Array<{
+    name: string;
+    approverDepartment: string;
+    slaDays: number | null;
+    isAuto?: boolean;
+    parallelGroup?: number;
+  }>;
 };
 
 const TYPES: SeedType[] = [
@@ -134,6 +141,30 @@ const TYPES: SeedType[] = [
       { key: 'medical_certificate', label: 'Медицинская справка', type: 'FILE', required: true, accept: ['pdf', 'jpg', 'jpeg', 'png'], maxSizeMb: 10 },
     ],
     route: [{ name: 'Куратор', approverDepartment: 'Куратор', slaDays: 1 }],
+  },
+  {
+    // Расширение сверх ТЗ: параллельный маршрут — все отделы согласуют одновременно.
+    code: 'bypass',
+    name: 'Обходной лист',
+    description: 'При выпуске, отчислении или переводе. Отметки об отсутствии задолженностей.',
+    fieldsSchema: [
+      {
+        key: 'reason',
+        label: 'Основание',
+        type: 'SELECT',
+        required: true,
+        options: ['Выпуск', 'Отчисление', 'Перевод в другой вуз', 'Академический отпуск'],
+      },
+      { key: 'comment', label: 'Комментарий', type: 'TEXTAREA', required: false, maxLength: 1000 },
+    ],
+    route: [
+      { name: 'Библиотека', approverDepartment: 'Библиотека', slaDays: 2, parallelGroup: 1 },
+      { name: 'Общежитие', approverDepartment: 'Комиссия по заселению', slaDays: 2, parallelGroup: 1 },
+      { name: 'Бухгалтерия', approverDepartment: 'Бухгалтерия', slaDays: 3, parallelGroup: 1 },
+      { name: 'Военно-учётный стол', approverDepartment: 'Отдел кадров студентов', slaDays: 3, parallelGroup: 1 },
+      { name: 'Спортклуб', approverDepartment: 'Профком', slaDays: 2, parallelGroup: 1 },
+      { name: 'Деканат — закрытие обходного', approverDepartment: 'Деканат', slaDays: 2 },
+    ],
   },
 ];
 
@@ -242,6 +273,7 @@ async function main(): Promise<void> {
         approverDepartment: s.approverDepartment,
         isAuto: s.isAuto ?? false,
         slaDays: s.slaDays,
+        parallelGroup: s.parallelGroup ?? null,
       })),
     });
   }

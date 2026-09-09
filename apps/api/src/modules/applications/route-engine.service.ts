@@ -22,17 +22,62 @@ export interface AutoStageRejection {
   reason: string;
 }
 
+/** Минимальная форма этапа, достаточная для логики маршрута. */
+export interface StageLike {
+  id?: string;
+  orderNum: number;
+  status: string;
+  parallelGroup?: number | null;
+}
+
 /**
  * Маршруты и этапы (ТЗ 4.2 `application_stages`, 6.5).
  * Название и подразделение копируются в момент подачи.
+ *
+ * Расширение сверх ТЗ — параллельные этапы: шаги с одинаковым
+ * `parallel_group` активируются одновременно и закрывают группу только
+ * когда согласованы все (обходной лист).
  */
 @Injectable()
 export class RouteEngineService {
   constructor(private readonly events: EventLogService) {}
 
+  /** Ключ группы активации: параллельная группа либо сам шаг. */
+  groupKey(s: StageLike): string {
+    return s.parallelGroup != null ? `g${s.parallelGroup}` : `s${s.orderNum}`;
+  }
+
+  /** Упорядоченный список ключей групп по «живым» этапам. */
+  private groupOrder(stages: StageLike[]): string[] {
+    const live = stages.filter((s) => s.status !== 'SKIPPED').sort((a, b) => a.orderNum - b.orderNum);
+    const keys: string[] = [];
+    for (const s of live) {
+      const k = this.groupKey(s);
+      if (!keys.includes(k)) keys.push(k);
+    }
+    return keys;
+  }
+
+  /** Этапы группы, ещё не закрытые согласованием. */
+  pendingInGroup(stages: StageLike[], stage: StageLike): StageLike[] {
+    const k = this.groupKey(stage);
+    return stages.filter(
+      (s) => this.groupKey(s) === k && s.orderNum !== stage.orderNum && s.status !== 'APPROVED' && s.status !== 'SKIPPED',
+    );
+  }
+
+  /** Этапы следующей группы после группы `stage`. */
+  nextGroupStages(stages: StageLike[], stage: StageLike): StageLike[] {
+    const order = this.groupOrder(stages);
+    const idx = order.indexOf(this.groupKey(stage));
+    const nextKey = order[idx + 1];
+    if (!nextKey) return [];
+    return stages.filter((s) => s.status !== 'SKIPPED' && this.groupKey(s) === nextKey);
+  }
+
   /**
    * Создаёт фактические этапы из шаблона маршрута и проводит ведущие авто-этапы.
-   * Возвращает id первого ACTIVE этапа, либо отказ, если авто-этап не пройден.
+   * Активирует всю первую группу (для параллельных маршрутов — сразу несколько).
    */
   async materialize(
     tx: Tx,
@@ -49,7 +94,7 @@ export class RouteEngineService {
     });
 
     const now = new Date();
-    let firstActiveId: string | null = null;
+    const created: Array<{ id: string; orderNum: number; parallelGroup: number | null; isAuto: boolean; name: string }> = [];
 
     for (const step of steps) {
       const stage = await tx.applicationStage.create({
@@ -59,63 +104,81 @@ export class RouteEngineService {
           orderNum: step.orderNum,
           name: step.name,
           approverDepartment: step.approverDepartment,
+          parallelGroup: step.parallelGroup,
           status: 'PENDING',
           dueAt: step.slaDays ? addWorkingDays(now, step.slaDays) : null,
         },
       });
+      created.push({
+        id: stage.id,
+        orderNum: step.orderNum,
+        parallelGroup: step.parallelGroup,
+        isAuto: step.isAuto,
+        name: step.name,
+      });
+    }
 
-      if (firstActiveId === null && !step.isAuto) {
-        await tx.applicationStage.update({ where: { id: stage.id }, data: { status: 'ACTIVE' } });
-        firstActiveId = stage.id;
-        continue;
-      }
+    // Проводим ведущие авто-этапы, затем активируем первую «живую» группу.
+    let firstActiveId: string | null = null;
+    const asStages: StageLike[] = created.map((c) => ({ orderNum: c.orderNum, status: 'PENDING', parallelGroup: c.parallelGroup }));
+    const order = this.groupOrder(asStages);
 
-      if (firstActiveId === null && step.isAuto) {
+    for (const key of order) {
+      const groupSteps = created.filter((c) => this.groupKey({ orderNum: c.orderNum, status: 'PENDING', parallelGroup: c.parallelGroup }) === key);
+
+      if (groupSteps.every((s) => s.isAuto)) {
         // ТЗ 6.5: авто-этап — проверка access_rule, сразу APPROVED или заявка -> REJECTED.
         const decision = evaluateAccessRule(params.typeAccessRule, params.applicant);
         if (!decision.allowed) {
-          await tx.applicationStage.update({
-            where: { id: stage.id },
-            data: { status: 'REJECTED', actedAt: new Date(), comment: decision.denyMessage },
-          });
+          for (const s of groupSteps) {
+            await tx.applicationStage.update({
+              where: { id: s.id },
+              data: { status: 'REJECTED', actedAt: new Date(), comment: decision.denyMessage },
+            });
+          }
           return { rejected: true, reason: decision.denyMessage ?? 'Автоматическая проверка не пройдена' };
         }
-        await tx.applicationStage.update({
-          where: { id: stage.id },
-          data: { status: 'APPROVED', actedAt: new Date(), comment: 'Проверено автоматически' },
-        });
-        await this.events.write(tx, {
-          action: 'application.stage_approved',
-          applicationId: params.applicationId,
-          payload: { stage: step.name, auto: true },
-        });
+        for (const s of groupSteps) {
+          await tx.applicationStage.update({
+            where: { id: s.id },
+            data: { status: 'APPROVED', actedAt: new Date(), comment: 'Проверено автоматически' },
+          });
+          await this.events.write(tx, {
+            action: 'application.stage_approved',
+            applicationId: params.applicationId,
+            payload: { stage: s.name, auto: true },
+          });
+        }
+        continue;
       }
+
+      // Первая неавтоматическая группа — активируем целиком.
+      for (const s of groupSteps) {
+        await tx.applicationStage.update({ where: { id: s.id }, data: { status: 'ACTIVE' } });
+      }
+      firstActiveId = groupSteps[0]?.id ?? null;
+      break;
     }
 
     return { activeStageId: firstActiveId };
   }
 
   /**
-   * Последний «живой» этап согласования.
-   * Для типов с офлайн-подписью (`requiresSignature`) последний этап маршрута —
-   * это подтверждение подписанного скана; предшествующий ему этап и считается
-   * последним этапом согласования (ТЗ 6.1).
+   * Последняя «живая» группа согласования.
+   * Для типов с офлайн-подписью последняя группа маршрута — подтверждение
+   * подписанного скана; предшествующая ей и считается последней группой
+   * согласования (ТЗ 6.1).
    */
-  isLastLiveStage(
-    stages: Array<{ orderNum: number; status: string }>,
-    approvedOrderNum: number,
-    requiresSignature = false,
-  ): boolean {
-    const live = stages
-      .filter((s) => s.status !== 'SKIPPED')
-      .map((s) => s.orderNum)
-      .sort((a, b) => a - b);
-    const lastApproval = requiresSignature ? live[live.length - 2] : live[live.length - 1];
-    return lastApproval === approvedOrderNum;
+  isLastLiveStage(stages: StageLike[], approvedOrderNum: number, requiresSignature = false): boolean {
+    const stage = stages.find((s) => s.orderNum === approvedOrderNum);
+    if (!stage) return false;
+    const order = this.groupOrder(stages);
+    const lastKey = requiresSignature ? order[order.length - 2] : order[order.length - 1];
+    return this.groupKey(stage) === lastKey;
   }
 
   /** Последний этап маршрута — этап подтверждения скана (для requiresSignature). */
-  signatureStageOrderNum(stages: Array<{ orderNum: number; status: string }>): number {
+  signatureStageOrderNum(stages: StageLike[]): number {
     const live = stages.filter((s) => s.status !== 'SKIPPED').map((s) => s.orderNum);
     return Math.max(...live);
   }

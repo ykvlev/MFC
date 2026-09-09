@@ -101,6 +101,9 @@ model User {
   notifications    Notification[]
   refreshTokens    RefreshToken[]
   deviceTokens     DeviceToken[]
+  announcements    Announcement[]
+  slotWindows      SlotWindow[]   @relation("SlotWindowOwner")
+  slotBookings     SlotBooking[]
 
   @@index([role])
   @@index([department])
@@ -140,6 +143,8 @@ model RouteStep {
   isAuto             Boolean @default(false) @map("is_auto")
   isOptional         Boolean @default(false) @map("is_optional")
   slaDays            Int?    @map("sla_days")
+  /// Этапы с одинаковым parallel_group активируются одновременно (обходной лист).
+  parallelGroup      Int?    @map("parallel_group")
 
   type   ApplicationType    @relation(fields: [typeId], references: [id], onDelete: Cascade)
   stages ApplicationStage[]
@@ -189,6 +194,8 @@ model ApplicationStage {
   comment            String?
   dueAt              DateTime?   @map("due_at") @db.Timestamptz(6)
   actedAt            DateTime?   @map("acted_at") @db.Timestamptz(6)
+  /// Копия route_steps.parallel_group на момент подачи.
+  parallelGroup      Int?        @map("parallel_group")
 
   application    Application  @relation("ApplicationStages", fields: [applicationId], references: [id], onDelete: Cascade)
   routeStep      RouteStep?   @relation(fields: [routeStepId], references: [id])
@@ -318,6 +325,73 @@ model RefreshToken {
 
   @@index([userId])
   @@map("refresh_tokens")
+}
+
+enum AnnouncementScope {
+  ALL
+  COURSE
+  GROUP
+}
+
+/// Объявления деканата: рассылка студентам с push (расширение сверх ТЗ).
+model Announcement {
+  id        String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  authorId  String            @map("author_id") @db.Uuid
+  title     String            @db.VarChar(255)
+  body      String
+  scope     AnnouncementScope @default(ALL)
+  value     String?           @db.VarChar(64)
+  recipients Int              @default(0)
+  createdAt DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  author User @relation(fields: [authorId], references: [id])
+
+  @@index([createdAt(sort: Desc)])
+  @@map("announcements")
+}
+
+enum SlotBookingStatus {
+  BOOKED
+  CANCELLED
+}
+
+/// Приёмное окно: сотрудник/преподаватель публикует интервал, разбитый на слоты.
+model SlotWindow {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  ownerId     String   @map("owner_id") @db.Uuid
+  title       String   @db.VarChar(255)
+  location    String?  @db.VarChar(255)
+  date        DateTime @db.Date
+  startTime   String   @map("start_time") @db.VarChar(5)
+  endTime     String   @map("end_time") @db.VarChar(5)
+  slotMinutes Int      @default(15) @map("slot_minutes")
+  capacity    Int      @default(1)
+  isOpen      Boolean  @default(true) @map("is_open")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  owner    User          @relation("SlotWindowOwner", fields: [ownerId], references: [id])
+  bookings SlotBooking[]
+
+  @@index([date, isOpen])
+  @@map("slot_windows")
+}
+
+model SlotBooking {
+  id          String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  windowId    String            @map("window_id") @db.Uuid
+  userId      String            @map("user_id") @db.Uuid
+  slotStart   String            @map("slot_start") @db.VarChar(5)
+  status      SlotBookingStatus @default(BOOKED)
+  comment     String?           @db.VarChar(500)
+  createdAt   DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  cancelledAt DateTime?         @map("cancelled_at") @db.Timestamptz(6)
+
+  window SlotWindow @relation(fields: [windowId], references: [id], onDelete: Cascade)
+  user   User       @relation(fields: [userId], references: [id])
+
+  @@index([windowId, slotStart, status])
+  @@index([userId, status])
+  @@map("slot_bookings")
 }
 
 // TZ-GAP: пуш-канал (отклонение п.6 плана) — токены устройств для APNs/FCM.

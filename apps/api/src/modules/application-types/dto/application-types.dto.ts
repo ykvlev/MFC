@@ -25,6 +25,8 @@ export const routeStepInput = z.object({
   isAuto: z.boolean().optional(),
   isOptional: z.boolean().optional(),
   slaDays: z.number().int().positive().nullable().optional(),
+  /** Этапы с одинаковым значением согласуются параллельно (обходной лист). */
+  parallelGroup: z.number().int().positive().nullable().optional(),
 });
 
 export const replaceRouteSchema = z.object({

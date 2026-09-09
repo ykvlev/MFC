@@ -110,6 +110,7 @@ export class ApplicationTypesService {
           isAuto: s.isAuto ?? false,
           isOptional: s.isOptional ?? false,
           slaDays: s.slaDays ?? null,
+          parallelGroup: s.parallelGroup ?? null,
         })),
       });
       await this.events.write(tx, { action: 'route.updated', actorId, payload: { typeId: id, steps: dto.steps.length } });

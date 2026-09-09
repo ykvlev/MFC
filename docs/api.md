@@ -54,3 +54,38 @@ application-types (CRUD + route), applications (+stages approve/return/reject,
 files, document/generate, confirm-signature, history), cells, booking-periods,
 bookings, absences (+export), notifications, devices, admin/analytics/summary,
 admin/event-log, health. Полное описание — Swagger `/api/v1/docs`.
+
+## Расширения сверх ТЗ
+
+### Обходной лист — параллельные этапы маршрута
+
+`route_steps.parallel_group` (int, nullable). Шаги с одинаковым значением
+активируются одновременно и закрывают группу только когда согласованы **все**.
+Шаг без группы — обычный последовательный этап. Копируется в
+`application_stages.parallel_group` при подаче.
+
+Тип `bypass` в seed: 5 параллельных отделов (библиотека, общежитие, бухгалтерия,
+военно-учётный стол, спортклуб) → финальный этап деканата.
+
+### Объявления деканата
+
+```
+GET  /api/v1/announcements                     -> Announcement[]
+POST /api/v1/announcements   [STAFF|ADMIN]     { title, body, scope: ALL|COURSE|GROUP, value? }
+```
+Публикация создаёт уведомление каждому адресату (IN_APP + best-effort PUSH)
+и запись `announcement.published` в журнале.
+
+### Модуль слотов — запись на приём
+
+```
+GET  /api/v1/slot-windows            ?scope=mine|available  -> SlotWindow[]
+POST /api/v1/slot-windows            [STAFF|TEACHER|ADMIN]
+     { title, location?, date, startTime, endTime, slotMinutes, capacity }
+GET  /api/v1/slot-windows/:id/slots  -> { window, slots: [{ slotStart, capacity, booked, free }] }
+GET  /api/v1/slot-bookings           -> мои записи
+POST /api/v1/slot-bookings           { windowId, slotStart, comment? }
+POST /api/v1/slot-bookings/:id/cancel
+```
+Бронирование — в транзакции с `SELECT ... FOR UPDATE` строки окна: вместимость
+слота и запрет повторной записи на одно окно проверяются под блокировкой.

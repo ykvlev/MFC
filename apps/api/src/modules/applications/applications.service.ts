@@ -256,8 +256,13 @@ export class ApplicationsService {
     const stage = await this.loadActiveStageFor(app.id, stageId, user);
     const type = await this.prisma.applicationType.findUniqueOrThrow({ where: { id: app.typeId } });
     const allStages = await this.prisma.applicationStage.findMany({ where: { applicationId: app.id } });
+    // Состояние группы ПОСЛЕ согласования этого этапа.
+    const afterApproval = allStages.map((s) => (s.id === stage.id ? { ...s, status: 'APPROVED' as const } : s));
+    const groupStillOpen = this.routes.pendingInGroup(afterApproval, stage).length > 0;
     const isLast = this.routes.isLastLiveStage(allStages, stage.orderNum, type.requiresSignature);
-    const intent = this.sm.resolveApproval(this.flagsOf(type), isLast);
+    const intent = groupStillOpen
+      ? ({ kind: 'NEXT_STAGE', status: 'IN_REVIEW' } as const)
+      : this.sm.resolveApproval(this.flagsOf(type), isLast);
 
     return this.prisma.$transaction(async (tx) => {
       await tx.applicationStage.update({
@@ -278,17 +283,30 @@ export class ApplicationsService {
       });
 
       if (intent.kind === 'NEXT_STAGE') {
-        const next = allStages
-          .filter((s) => s.orderNum > stage.orderNum && s.status === 'PENDING')
-          .sort((a, b) => a.orderNum - b.orderNum)[0];
-        if (next) {
-          await tx.applicationStage.update({ where: { id: next.id }, data: { status: 'ACTIVE' } });
-          await tx.application.update({ where: { id: app.id }, data: { currentStageId: next.id } });
-          await this.notifications.notifyDepartment(tx, next.approverDepartment, {
-            applicationId: app.id,
-            title: `Новая заявка №${app.number} ожидает вашего согласования`,
-            body: `Этап «${next.name}»`,
+        if (groupStillOpen) {
+          // Параллельная группа ещё не закрыта — ждём остальные подразделения.
+          const rest = this.routes.pendingInGroup(afterApproval, stage);
+          await tx.application.update({
+            where: { id: app.id },
+            data: { currentStageId: allStages.find((s) => s.orderNum === rest[0]?.orderNum)?.id ?? app.currentStageId },
           });
+        } else {
+          // Активируем всю следующую группу (может быть несколько параллельных этапов).
+          const nextGroup = this.routes
+            .nextGroupStages(afterApproval, stage)
+            .map((g) => allStages.find((s) => s.orderNum === g.orderNum)!)
+            .filter((s) => s && s.status === 'PENDING');
+          for (const next of nextGroup) {
+            await tx.applicationStage.update({ where: { id: next.id }, data: { status: 'ACTIVE' } });
+            await this.notifications.notifyDepartment(tx, next.approverDepartment, {
+              applicationId: app.id,
+              title: `Новая заявка №${app.number} ожидает вашего согласования`,
+              body: `Этап «${next.name}»`,
+            });
+          }
+          if (nextGroup[0]) {
+            await tx.application.update({ where: { id: app.id }, data: { currentStageId: nextGroup[0].id } });
+          }
         }
       } else if (intent.kind === 'AWAIT_SIGNATURE') {
         await tx.application.update({ where: { id: app.id }, data: { status: 'AWAITING_SIGNATURE' } });
