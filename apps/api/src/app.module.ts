@@ -12,6 +12,9 @@ import { HealthModule } from './modules/health/health.module.js';
 import { AuthModule } from './modules/auth/auth.module.js';
 import { UsersModule } from './modules/users/users.module.js';
 import { ApplicationTypesModule } from './modules/application-types/application-types.module.js';
+import { NotificationsModule } from './modules/notifications/notifications.module.js';
+import { CellsModule } from './modules/cells/cells.module.js';
+import { ApplicationsModule } from './modules/applications/applications.module.js';
 
 @Module({
   imports: [
@@ -27,7 +30,10 @@ import { ApplicationTypesModule } from './modules/application-types/application-
     AuthModule,
     UsersModule,
     ApplicationTypesModule,
-    // Этап 3+: ApplicationsModule, FilesModule, CellsModule, BookingsModule, ...
+    NotificationsModule,
+    CellsModule,
+    ApplicationsModule,
+    // Этап 4+: FilesModule, BookingsModule, DocumentsModule, AbsencesModule, AnalyticsModule, JobsModule
   ],
   providers: [
     { provide: APP_GUARD, useClass: JwtAuthGuard },
