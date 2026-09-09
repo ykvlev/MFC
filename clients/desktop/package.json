@@ -8,7 +8,9 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "lint": "tsc --noEmit",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "prebuild": "pnpm --filter @edinoe-okno/shared build",
+    "predev": "pnpm --filter @edinoe-okno/shared build"
   },
   "dependencies": {
     "@edinoe-okno/shared": "workspace:*",

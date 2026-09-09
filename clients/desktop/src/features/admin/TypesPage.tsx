@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { apiFetch } from '../../lib/api';
 import type { ApplicationType } from '../../lib/types';
-import { Card, ErrorBox, PageHeader, Skeleton } from '../../components/ui';
+import { Button, Card, ErrorBox, PageHeader, Skeleton } from '../../components/ui';
 
 export function TypesPage() {
   const navigate = useNavigate();
@@ -13,7 +13,11 @@ export function TypesPage() {
 
   return (
     <>
-      <PageHeader kicker="конфигурация" title="Типы заявок" />
+      <PageHeader
+        kicker="конфигурация"
+        title="Типы заявок"
+        actions={<Button onClick={() => navigate('/admin/types/new')}>+ Создать тип</Button>}
+      />
       <Card className="mb-4 border-brand p-4 text-[13px] leading-relaxed">
         Новый тип заявки — это запись конфигурации: схема полей, маршрут, правило доступа.
         Правок кода ядра не требуется.
