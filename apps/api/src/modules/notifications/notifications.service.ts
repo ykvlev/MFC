@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import type { Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service.js';
+import { PushChannel } from './channels/push.channel.js';
 
 export interface NotifyInput {
   userId: string;
@@ -19,7 +20,10 @@ type Tx = Prisma.TransactionClient | PrismaService;
  */
 @Injectable()
 export class NotificationsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly push: PushChannel,
+  ) {}
 
   async createInApp(tx: Tx, input: NotifyInput): Promise<void> {
     await tx.notification.create({
@@ -32,6 +36,8 @@ export class NotificationsService {
         channel: 'IN_APP',
       },
     });
+    // Best-effort PUSH — не в транзакции, падение не влияет на бизнес-логику (ТЗ 10).
+    void this.push.send(input.userId, input.title, input.body);
   }
 
   /** Уведомить всех сотрудников подразделения (ТЗ 10: «Новая заявка на этапе»). */

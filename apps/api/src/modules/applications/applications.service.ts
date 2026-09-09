@@ -256,7 +256,7 @@ export class ApplicationsService {
     const stage = await this.loadActiveStageFor(app.id, stageId, user);
     const type = await this.prisma.applicationType.findUniqueOrThrow({ where: { id: app.typeId } });
     const allStages = await this.prisma.applicationStage.findMany({ where: { applicationId: app.id } });
-    const isLast = this.routes.isLastLiveStage(allStages, stage.orderNum);
+    const isLast = this.routes.isLastLiveStage(allStages, stage.orderNum, type.requiresSignature);
     const intent = this.sm.resolveApproval(this.flagsOf(type), isLast);
 
     return this.prisma.$transaction(async (tx) => {
@@ -299,25 +299,79 @@ export class ApplicationsService {
           body: 'Распечатайте заявление, подпишите у заведующего и загрузите скан',
         });
       } else if (intent.kind === 'ASSIGN_CELL') {
-        await tx.application.update({ where: { id: app.id }, data: { status: 'APPROVED' } });
-        const res = await this.cells.assignForApplication(tx, { id: app.id, number: app.number, userId: app.userId });
-        if (res.assigned) {
-          await tx.application.update({ where: { id: app.id }, data: { status: 'READY' } });
-          await this.notifications.createInApp(tx, {
-            userId: app.userId,
-            applicationId: app.id,
-            title: `Документ по заявке №${app.number} готов`,
-            body: `Ячейка ${res.cellCode}, код ${res.pickupCode}. Хранится до ${res.expiresAt?.toLocaleDateString('ru-RU')}`,
-          });
-        }
+        await this.finalizeWithCell(tx, app);
       } else {
-        await tx.application.update({ where: { id: app.id }, data: { status: 'ISSUED', closedAt: new Date() } });
-        await this.notifications.createInApp(tx, {
-          userId: app.userId,
-          applicationId: app.id,
-          title: `Заявка №${app.number} закрыта`,
-          body: 'Решение зафиксировано в системе',
+        await this.close(tx, app);
+      }
+      return tx.application.findUniqueOrThrow({ where: { id: app.id }, include: DETAIL_INCLUDE });
+    });
+  }
+
+  private async finalizeWithCell(
+    tx: Prisma.TransactionClient,
+    app: Pick<Application, 'id' | 'number' | 'userId'>,
+  ): Promise<void> {
+    await tx.application.update({ where: { id: app.id }, data: { status: 'APPROVED' } });
+    const res = await this.cells.assignForApplication(tx, { id: app.id, number: app.number, userId: app.userId });
+    if (res.assigned) {
+      await tx.application.update({ where: { id: app.id }, data: { status: 'READY' } });
+      await this.notifications.createInApp(tx, {
+        userId: app.userId,
+        applicationId: app.id,
+        title: `Документ по заявке №${app.number} готов`,
+        body: `Ячейка ${res.cellCode}, код ${res.pickupCode}. Хранится до ${res.expiresAt?.toLocaleDateString('ru-RU')}`,
+      });
+    }
+  }
+
+  private async close(
+    tx: Prisma.TransactionClient,
+    app: Pick<Application, 'id' | 'number' | 'userId'>,
+  ): Promise<void> {
+    await tx.application.update({ where: { id: app.id }, data: { status: 'ISSUED', closedAt: new Date() } });
+    await this.notifications.createInApp(tx, {
+      userId: app.userId,
+      applicationId: app.id,
+      title: `Заявка №${app.number} закрыта`,
+      body: 'Решение зафиксировано в системе',
+    });
+  }
+
+  /** ТЗ 9 п.7: сотрудник проверил подписанный скан и подтверждает. */
+  async confirmSignature(app: Application, user: AuthUser) {
+    if (app.status !== 'AWAITING_SIGNATURE') {
+      throw new BadRequestException({ code: 'INVALID_TRANSITION', message: 'Заявка не ожидает подпись' });
+    }
+    const scan = await this.prisma.file.findFirst({ where: { applicationId: app.id, kind: 'SIGNED_SCAN' } });
+    if (!scan) {
+      throw new BadRequestException({ code: 'VALIDATION_ERROR', message: 'Подписанный скан не загружен' });
+    }
+    const stages = await this.prisma.applicationStage.findMany({ where: { applicationId: app.id } });
+    const sigOrder = this.routes.signatureStageOrderNum(stages);
+    const sigStage = stages.find((s) => s.orderNum === sigOrder);
+    if (sigStage && user.role !== 'ADMIN' && sigStage.approverDepartment !== user.department) {
+      throw new ForbiddenException({ code: 'ACCESS_DENIED', message: 'Подтверждает другое подразделение' });
+    }
+    const type = await this.prisma.applicationType.findUniqueOrThrow({ where: { id: app.typeId } });
+
+    return this.prisma.$transaction(async (tx) => {
+      if (sigStage) {
+        await tx.applicationStage.update({
+          where: { id: sigStage.id },
+          data: { status: 'APPROVED', approvedById: user.id, actedAt: new Date(), comment: 'Скан проверен' },
         });
+      }
+      this.sm.assert('AWAITING_SIGNATURE', 'uploadSignedScan', 'APPROVED');
+      await this.events.write(tx, {
+        action: 'application.stage_approved',
+        applicationId: app.id,
+        actorId: user.id,
+        payload: { stage: sigStage?.name ?? 'подпись' },
+      });
+      if (type.usesCell) {
+        await this.finalizeWithCell(tx, app);
+      } else {
+        await this.close(tx, app);
       }
       return tx.application.findUniqueOrThrow({ where: { id: app.id }, include: DETAIL_INCLUDE });
     });

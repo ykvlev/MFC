@@ -17,6 +17,10 @@ import { CellsModule } from './modules/cells/cells.module.js';
 import { ApplicationsModule } from './modules/applications/applications.module.js';
 import { FilesModule } from './modules/files/files.module.js';
 import { BookingsModule } from './modules/bookings/bookings.module.js';
+import { DocumentsModule } from './modules/documents/documents.module.js';
+import { AbsencesModule } from './modules/absences/absences.module.js';
+import { AnalyticsModule } from './modules/analytics/analytics.module.js';
+import { JobsModule } from './modules/jobs/jobs.module.js';
 
 @Module({
   imports: [
@@ -37,7 +41,10 @@ import { BookingsModule } from './modules/bookings/bookings.module.js';
     ApplicationsModule,
     FilesModule,
     BookingsModule,
-    // Этап 8+: DocumentsModule, AbsencesModule, AnalyticsModule, JobsModule
+    DocumentsModule,
+    AbsencesModule,
+    AnalyticsModule,
+    JobsModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: JwtAuthGuard },

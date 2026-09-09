@@ -95,15 +95,28 @@ export class RouteEngineService {
     return { activeStageId: firstActiveId };
   }
 
-  /** Индекс последнего «живого» этапа (не SKIPPED). */
+  /**
+   * Последний «живой» этап согласования.
+   * Для типов с офлайн-подписью (`requiresSignature`) последний этап маршрута —
+   * это подтверждение подписанного скана; предшествующий ему этап и считается
+   * последним этапом согласования (ТЗ 6.1).
+   */
   isLastLiveStage(
     stages: Array<{ orderNum: number; status: string }>,
     approvedOrderNum: number,
+    requiresSignature = false,
   ): boolean {
     const live = stages
       .filter((s) => s.status !== 'SKIPPED')
       .map((s) => s.orderNum)
       .sort((a, b) => a - b);
-    return live[live.length - 1] === approvedOrderNum;
+    const lastApproval = requiresSignature ? live[live.length - 2] : live[live.length - 1];
+    return lastApproval === approvedOrderNum;
+  }
+
+  /** Последний этап маршрута — этап подтверждения скана (для requiresSignature). */
+  signatureStageOrderNum(stages: Array<{ orderNum: number; status: string }>): number {
+    const live = stages.filter((s) => s.status !== 'SKIPPED').map((s) => s.orderNum);
+    return Math.max(...live);
   }
 }

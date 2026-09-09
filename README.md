@@ -36,13 +36,20 @@ pnpm dev:api                  # http://localhost:3000/api/v1 · Swagger /api/v1/
 | 0 | ✅ | Монорепо, docker-compose (PG/Redis/MinIO), CI, `.env` + валидация при старте |
 | 1 | ✅ | Prisma-схема (§4), seed (§14), auth (JWT access+refresh, argon2id, ротация), `JwtAuthGuard`/`RolesGuard`/`ApplicationAccessGuard`, users + импорт CSV, `event_log` |
 | 2 | ✅ | `application_types`: CRUD, `fields_schema`/`access_rule` (Zod), `access-rule.evaluator` + тесты, `PUT /:id/route` |
-| 3 | ✅ | Движок: подача, `materialize` этапов из маршрута, авто-этапы (access_rule), статусная машина (`ALLOWED_TRANSITIONS` + `resolveApproval`) + тесты, согласование/возврат/отклонение, `resubmit` без пересогласования, отмена, история; каждый переход — одна транзакция с `event_log` + `notifications` |
-| 5 (частично) | ✅ | Модуль ячеек: `FOR UPDATE SKIP LOCKED`, `pickup_code`, TTL, `CellLockDriver`/`ManualLockDriver` через DI, `POST /cells/:id/issue` + `/open` |
-| 7 (частично) | ✅ | `NotificationsService` (канал IN_APP), эндпоинты списка/прочтения |
-| 4, 6, 8–10 | ⏳ | Файлы, брони, PDF+реестр, аналитика+журнал, пуши |
+| 3 | ✅ | Движок: подача, `materialize` этапов, авто-этапы, статусная машина + тесты, согласование/возврат/отклонение, `resubmit` без пересогласования, подтверждение подписи, отмена, история; каждый переход — одна транзакция с журналом + уведомлением |
+| 4 | ✅ | Файлы: S3(MinIO)/Local через DI, расширение + магические байты + тесты, лимит размера, отдача через контроллер |
+| 5 | ✅ | Ячейки: `FOR UPDATE SKIP LOCKED`, `pickup_code`, TTL, `CellLockDriver`/`ManualLockDriver`, `/issue`, `/open` |
+| 6 | ✅ | Брони: `FOR UPDATE` периода, квота/`WAITLIST`, `promoteNext` + пересчёт позиций + тесты, запрет пересечений |
+| 7 | ✅ | Уведомления IN_APP + PUSH-канал (заглушка APNs/FCM), cron `expired-cells`/`sla-reminder` (`@nestjs/schedule`) |
+| 8 | ✅ | PDF (Puppeteer, A4, поля 20 мм), `document/generate` + `document`, реестр освобождённых `/absences` + CSV |
+| 9 | ✅ | `/admin/analytics/summary` (§11.8), `/admin/event-log` с фильтрами |
+| 10 | ✅ | `device_tokens`, `POST/DELETE /devices`, push best-effort из уведомлений |
 
-Проверено: `tsc --noEmit` и `nest build` зелёные; 20 юнит-тестов проходят
-(`shared` 9, `api` 11). Запуск против БД — после установки Docker (`docker compose up`).
+Проверено: `tsc --noEmit` и `nest build` зелёные; 27 юнит-тестов (`shared` 9, `api` 18).
+Запуск против БД и интеграционные тесты (§15.2) — после установки Docker.
+
+Не сделано: email-канал через BullMQ (§10, опц.), интеграционные + e2e тесты (§15.2–15.3),
+ручная доработка первой миграции (частичные индексы, GIN, неизменяемость `event_log`).
 
 Клиенты (iOS/Android/десктоп) — после готовности бэкенда, на машинах с нужным SDK.
 

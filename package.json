@@ -28,7 +28,8 @@
       "prisma",
       "argon2",
       "esbuild",
-      "msgpackr-extract"
+      "msgpackr-extract",
+      "puppeteer"
     ]
   }
 }
