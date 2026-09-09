@@ -15,6 +15,8 @@ import { ApplicationTypesModule } from './modules/application-types/application-
 import { NotificationsModule } from './modules/notifications/notifications.module.js';
 import { CellsModule } from './modules/cells/cells.module.js';
 import { ApplicationsModule } from './modules/applications/applications.module.js';
+import { FilesModule } from './modules/files/files.module.js';
+import { BookingsModule } from './modules/bookings/bookings.module.js';
 
 @Module({
   imports: [
@@ -33,7 +35,9 @@ import { ApplicationsModule } from './modules/applications/applications.module.j
     NotificationsModule,
     CellsModule,
     ApplicationsModule,
-    // Этап 4+: FilesModule, BookingsModule, DocumentsModule, AbsencesModule, AnalyticsModule, JobsModule
+    FilesModule,
+    BookingsModule,
+    // Этап 8+: DocumentsModule, AbsencesModule, AnalyticsModule, JobsModule
   ],
   providers: [
     { provide: APP_GUARD, useClass: JwtAuthGuard },
