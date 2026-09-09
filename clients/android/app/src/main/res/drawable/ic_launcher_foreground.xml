@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Знак «окна»: белая рамка с проёмом, на фирменном синем фоне. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M34,34 h40 v40 h-40 z M40,40 v28 h28 v-28 z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M52,40 h4 v28 h-4 z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M40,52 h28 v4 h-28 z" />
+</vector>
