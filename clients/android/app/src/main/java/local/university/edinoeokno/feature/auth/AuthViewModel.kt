@@ -16,6 +16,7 @@ data class AuthUiState(
     val busy: Boolean = false,
     val error: String? = null,
     val user: User? = null,
+    val serverAddress: String = "",
 )
 
 @HiltViewModel
@@ -24,7 +25,7 @@ class AuthViewModel @Inject constructor(
     private val session: SessionState,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(AuthUiState())
+    private val _state = MutableStateFlow(AuthUiState(serverAddress = repo.serverAddress))
     val state: StateFlow<AuthUiState> = _state
 
     init {
@@ -42,10 +43,13 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun login(email: String, password: String) {
+    fun login(email: String, password: String, serverAddress: String) {
         viewModelScope.launch {
             _state.value = _state.value.copy(busy = true, error = null)
-            runCatching { repo.login(email, password) }
+            runCatching {
+                repo.configureServer(serverAddress)
+                repo.login(email, password)
+            }
                 .onSuccess { _state.value = _state.value.copy(busy = false, user = repo.user.value) }
                 .onFailure { _state.value = _state.value.copy(busy = false, error = it.userMessage()) }
         }
@@ -54,7 +58,7 @@ class AuthViewModel @Inject constructor(
     fun logout() {
         viewModelScope.launch {
             repo.logout()
-            _state.value = AuthUiState(booting = false)
+            _state.value = AuthUiState(booting = false, serverAddress = repo.serverAddress)
         }
     }
 }

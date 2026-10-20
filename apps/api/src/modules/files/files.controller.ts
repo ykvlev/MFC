@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -45,6 +46,9 @@ export class FilesController {
     @Body('kind') kind: string,
     @Body('fieldKey') fieldKey?: string,
   ) {
+    if (!file?.buffer) {
+      throw new BadRequestException({ code: 'FILE_REQUIRED', message: 'Файл не приложен' });
+    }
     const allowed = ['ATTACHMENT', 'GENERATED_DOCUMENT', 'SIGNED_SCAN'];
     const normalized = allowed.includes(kind) ? kind : 'ATTACHMENT';
     return this.files.upload(req.application, user, {

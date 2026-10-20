@@ -8,20 +8,23 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import local.university.edinoeokno.BuildConfig
 import local.university.edinoeokno.designsystem.Brand
 import local.university.edinoeokno.designsystem.BrandButton
 import local.university.edinoeokno.designsystem.Radius
 import local.university.edinoeokno.designsystem.SectionLabel
 
 @Composable
-fun LoginScreen(state: AuthUiState, onLogin: (String, String) -> Unit) {
+fun LoginScreen(state: AuthUiState, onLogin: (String, String, String) -> Unit) {
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
+    var serverAddress by rememberSaveable(state.serverAddress) { mutableStateOf(state.serverAddress) }
 
     Column(
         Modifier
@@ -59,6 +62,19 @@ fun LoginScreen(state: AuthUiState, onLogin: (String, String) -> Unit) {
         ) {
             SectionLabel("вход")
 
+            if (BuildConfig.DEBUG) {
+                OutlinedTextField(
+                    value = serverAddress,
+                    onValueChange = { serverAddress = it },
+                    label = { Text("Адрес сервера") },
+                    supportingText = { Text("Телефон: IP компьютера в Wi-Fi. Эмулятор: 10.0.2.2. По USB: localhost с перенаправлением порта.") },
+                    singleLine = true,
+                    shape = RoundedCornerShape(Radius.Pill.dp),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
@@ -93,7 +109,7 @@ fun LoginScreen(state: AuthUiState, onLogin: (String, String) -> Unit) {
 
             BrandButton(
                 text = "Войти",
-                onClick = { onLogin(email, password) },
+                onClick = { onLogin(email, password, serverAddress) },
                 enabled = email.isNotBlank() && password.isNotBlank(),
                 loading = state.busy,
             )

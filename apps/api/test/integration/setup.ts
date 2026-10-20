@@ -1,5 +1,6 @@
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import { STORAGE_DRIVER, type StorageDriver } from '../../src/modules/files/storage/storage.interface.js';
 import { PrismaClient } from '@prisma/client';
 import * as argon2 from 'argon2';
 import { AppModule } from '../../src/app.module.js';
@@ -21,11 +22,37 @@ export interface TestCtx {
   close: () => Promise<void>;
 }
 
-export async function createApp(): Promise<TestCtx> {
-  const moduleRef = await Test.createTestingModule({ imports: [AppModule] }).compile();
+/**
+ * Поднимает изолированный экземпляр приложения для теста.
+ *
+ * throttle=false (по умолчанию) отключает ThrottlerGuard: лимит логина
+ * 5/IP/15мин глобален и в процессе тестов (общий 127.0.0.1) иначе течёт
+ * между файлами — а booking-тест логинит 50 студентов. Реальный лимит
+ * проверяется отдельно в auth-rate-limit.test.ts с throttle=true.
+ */
+export async function createApp(
+  storage?: Partial<StorageDriver>,
+  throttle = false,
+): Promise<TestCtx> {
+  // ThrottlerGuard подключён через APP_GUARD, поэтому ни overrideGuard, ни
+  // overrideProvider до него не достают. Отключаем через env-флаг skipIf,
+  // который читается в конфиге throttler'а. throttle=true (auth-rate-limit)
+  // оставляет реальный лимит включённым.
+  if (throttle) {
+    delete process.env.THROTTLE_DISABLED;
+  } else {
+    process.env.THROTTLE_DISABLED = '1';
+  }
+  const builder = Test.createTestingModule({ imports: [AppModule] });
+  // Тесты вложений подсовывают in-memory драйвер вместо S3/MinIO —
+  // без него upload/download зависели бы от внешнего хранилища.
+  if (storage) {
+    builder.overrideProvider(STORAGE_DRIVER).useValue(storage);
+  }
+  const moduleRef = await builder.compile();
   const app = moduleRef.createNestApplication();
   app.setGlobalPrefix('api/v1');
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+  // Валидация — через ZodValidationPipe на хендлерах, как в src/main.ts.
   app.useGlobalFilters(new HttpExceptionFilter());
   await app.listen(0);
   const url = (await app.getUrl()).replace('[::1]', '127.0.0.1');

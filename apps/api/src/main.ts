@@ -1,6 +1,7 @@
+import './load-env.js';
 import 'reflect-metadata';
 import { randomUUID } from 'node:crypto';
-import { Logger, ValidationPipe } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import type { NextFunction, Request, Response } from 'express';
@@ -11,7 +12,10 @@ async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
 
   app.setGlobalPrefix('api/v1');
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+  // Валидация входных данных — через ZodValidationPipe на каждом хендлере
+  // (см. common/pipes/zod-validation.pipe.ts). Глобальный ValidationPipe из
+  // @nestjs/common не используется: DTO не имеют class-validator-декораторов,
+  // а его регистрация лишь роняла ERROR в лог о missing "class-validator".
   app.useGlobalFilters(new HttpExceptionFilter());
 
   app.use((req: Request & { requestId?: string }, res: Response, next: NextFunction) => {

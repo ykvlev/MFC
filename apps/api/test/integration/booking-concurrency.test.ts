@@ -52,8 +52,10 @@ describe('Конкурентная запись в профилакторий', 
           method: 'POST',
           body: JSON.stringify({ typeId: type.id, data: {} }),
         });
+        expect(created.status).toBe(201);
         const app = (await created.json()) as { id: string };
-        await c(`/applications/${app.id}/submit`, { method: 'POST' });
+        const submitted = await c(`/applications/${app.id}/submit`, { method: 'POST' });
+        expect(submitted.status).toBe(201);
         return c('/bookings', {
           method: 'POST',
           body: JSON.stringify({ applicationId: app.id, periodId: period.id }),

@@ -102,7 +102,13 @@ export class FilesService {
     await this.prisma.file.delete({ where: { id: file.id } });
   }
 
-  list(appId: string) {
-    return this.prisma.file.findMany({ where: { applicationId: appId }, orderBy: { createdAt: 'asc' } });
+  async list(appId: string) {
+    const files = await this.prisma.file.findMany({
+      where: { applicationId: appId },
+      orderBy: { createdAt: 'asc' },
+    });
+    // sizeBytes — BigInt в БД; JSON.stringify его не умеет и ответ падает 500.
+    // Отдаём number, как и upload().
+    return files.map((file) => ({ ...file, sizeBytes: Number(file.sizeBytes) }));
   }
 }

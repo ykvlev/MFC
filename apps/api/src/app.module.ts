@@ -1,3 +1,4 @@
+import './common/bigint-serializer.js';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
@@ -28,10 +29,19 @@ import { SlotsModule } from './modules/slots/slots.module.js';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      // nest start запускается с cwd = apps/api, поэтому корневой .env монорепо
+      // не подхватывается автоматически. Грузим его явно, с fallback на
+      // локальный apps/api/.env, если он есть.
+      envFilePath: ['../../.env', '.env'],
       validate: (raw) => buildConfig(validateEnv(raw)),
     }),
     // ТЗ 13.1: 100 запросов/мин по умолчанию; /auth/login ужесточается в AuthModule.
-    ThrottlerModule.forRoot([{ ttl: 60_000, limit: 100 }]),
+    ThrottlerModule.forRoot({
+      throttlers: [{ ttl: 60_000, limit: 100 }],
+      // Отключается только в интеграционных тестах (THROTTLE_DISABLED=1),
+      // где общий 127.0.0.1 иначе исчерпывал бы лимит между сценариями.
+      skipIf: () => process.env.THROTTLE_DISABLED === '1',
+    }),
     PrismaModule,
     EventsModule,
     HealthModule,

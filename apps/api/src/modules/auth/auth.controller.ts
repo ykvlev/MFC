@@ -1,6 +1,7 @@
 import { Body, Controller, Get, HttpCode, Ip, Post, UsePipes } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Headers } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { CurrentUser, type AuthUser } from '../../common/decorators/current-user.decorator.js';
 import { Public } from '../../common/decorators/public.decorator.js';
 import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe.js';
@@ -27,6 +28,7 @@ export class AuthController {
 
   @Public()
   @Post('login')
+  @Throttle({ default: { limit: 5, ttl: 15 * 60_000 } })
   @HttpCode(200)
   @UsePipes(new ZodValidationPipe(loginSchema))
   login(@Body() dto: LoginDto, @Ip() ip: string, @Headers('user-agent') ua?: string) {

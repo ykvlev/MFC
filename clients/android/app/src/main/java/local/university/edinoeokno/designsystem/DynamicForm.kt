@@ -26,7 +26,7 @@ import local.university.edinoeokno.model.FieldSchema
  */
 
 /** Значение одного поля во внутреннем виде. */
-private sealed interface FieldValue {
+sealed interface FieldValue {
     data class Text(val value: String) : FieldValue
     data class Number(val value: String) : FieldValue
     data class Bool(val value: Boolean) : FieldValue

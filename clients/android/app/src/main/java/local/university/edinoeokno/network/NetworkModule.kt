@@ -38,7 +38,11 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun okHttp(tokens: TokenStore, json: Json, session: SessionState): OkHttpClient {
+    fun serverConfig(@ApplicationContext context: Context): ServerConfig = ServerConfig(context)
+
+    @Provides
+    @Singleton
+    fun okHttp(tokens: TokenStore, json: Json, session: SessionState, server: ServerConfig): OkHttpClient {
         // Отдельный «голый» клиент для запроса refresh — иначе рекурсия аутентификатора.
         val bare = OkHttpClient.Builder()
             .connectTimeout(15, TimeUnit.SECONDS)
@@ -48,11 +52,12 @@ object NetworkModule {
         val builder = OkHttpClient.Builder()
             .connectTimeout(15, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
+            .addInterceptor(ServerRoutingInterceptor(server))
             .addInterceptor(AccessTokenInterceptor(tokens))
             .authenticator(
                 RefreshAuthenticator(
                     tokens = tokens,
-                    baseUrl = BuildConfig.API_BASE,
+                    baseUrl = { server.address },
                     json = json,
                     clientProvider = { bare },
                     onSessionExpired = { session.expire() },

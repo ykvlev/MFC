@@ -87,6 +87,6 @@ pnpm dev:api                  # http://localhost:3000/api/v1 · Swagger /api/v1/
 - email-канал через BullMQ (§10, опционально)
 - e2e Playwright (§15.3)
 - генерация первой Prisma-миграции (нужен запущенный Postgres); SQL-ограничения
-  подготовлены в `apps/api/prisma/migrations/manual/0001_constraints.sql`
+  включены в миграцию `20260910000001_constraints`; отдельная копия — `apps/api/prisma/manual/0001_constraints.sql`
 
 Дальше по `docs/plan.md` → «Порядок работ».

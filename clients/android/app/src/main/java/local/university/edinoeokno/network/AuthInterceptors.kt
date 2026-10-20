@@ -12,7 +12,7 @@ import okhttp3.Route
 import local.university.edinoeokno.model.RefreshRequest
 import local.university.edinoeokno.model.RefreshResponse
 
-/** Подставляет Bearer access-token во все запросы, кроме /auth/*. */
+/** Подставляет Bearer access-token во все запросы, кроме авторизации. */
 class AccessTokenInterceptor(private val tokens: TokenStore) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
@@ -32,7 +32,7 @@ class AccessTokenInterceptor(private val tokens: TokenStore) : Interceptor {
  */
 class RefreshAuthenticator(
     private val tokens: TokenStore,
-    private val baseUrl: String,
+    private val baseUrl: () -> String,
     private val json: Json,
     private val clientProvider: () -> OkHttpClient,
     private val onSessionExpired: () -> Unit,
@@ -52,7 +52,7 @@ class RefreshAuthenticator(
 
             val body = json.encodeToString(RefreshRequest.serializer(), RefreshRequest(refresh))
                 .toRequestBody("application/json".toMediaType())
-            val refreshCall = Request.Builder().url("$baseUrl/auth/refresh").post(body).build()
+            val refreshCall = Request.Builder().url("${baseUrl()}/auth/refresh").post(body).build()
 
             clientProvider().newCall(refreshCall).execute().use { res ->
                 if (!res.isSuccessful) {

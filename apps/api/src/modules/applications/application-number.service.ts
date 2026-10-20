@@ -3,14 +3,13 @@ import type { Prisma } from '@prisma/client';
 
 /**
  * Человекочитаемый номер `2026-000123` (ТЗ 4.2).
- * Счётчик — по году, в рамках транзакции подачи: берём максимум существующего
- * номера за год и увеличиваем. Уникальный индекс на `applications.number`
- * страхует от гонок (повтор транзакции при коллизии — на вызывающей стороне).
+ * Счётчик — по году, под транзакционной advisory-блокировкой PostgreSQL.
  */
 @Injectable()
 export class ApplicationNumberService {
   async next(tx: Prisma.TransactionClient): Promise<string> {
     const year = new Date().getFullYear();
+    await tx.$queryRaw`SELECT 1 FROM pg_advisory_xact_lock(182736, ${year}::integer)`;
     const prefix = `${year}-`;
     const last = await tx.application.findFirst({
       where: { number: { startsWith: prefix } },

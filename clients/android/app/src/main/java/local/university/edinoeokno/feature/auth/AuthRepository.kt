@@ -7,6 +7,7 @@ import local.university.edinoeokno.model.RefreshRequest
 import local.university.edinoeokno.model.User
 import local.university.edinoeokno.network.OknoApi
 import local.university.edinoeokno.network.TokenStore
+import local.university.edinoeokno.network.ServerConfig
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -14,9 +15,19 @@ import javax.inject.Singleton
 class AuthRepository @Inject constructor(
     private val api: OknoApi,
     private val tokens: TokenStore,
+    private val server: ServerConfig,
 ) {
     private val _user = MutableStateFlow<User?>(null)
     val user: StateFlow<User?> = _user
+
+    val serverAddress: String get() = server.address
+
+    fun configureServer(address: String) {
+        if (server.save(address)) {
+            tokens.clear()
+            _user.value = null
+        }
+    }
 
     suspend fun login(email: String, password: String) {
         val res = api.login(LoginRequest(email.trim(), password))
