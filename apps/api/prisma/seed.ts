@@ -9,8 +9,8 @@ import * as argon2 from 'argon2';
 const prisma = new PrismaClient();
 
 const DEPARTMENTS = [
-  'Деканат',
-  'Канцелярия',
+  'Учебная часть',
+  'Студенческое МФЦ',
   'Куратор',
   'Заведующий отделением',
   'Профком',
@@ -52,8 +52,8 @@ const TYPES: SeedType[] = [
       { key: 'comment', label: 'Комментарий', type: 'TEXTAREA', required: false, maxLength: 1000 },
     ],
     route: [
-      { name: 'Деканат', approverDepartment: 'Деканат', slaDays: 2 },
-      { name: 'Канцелярия / печать', approverDepartment: 'Канцелярия', slaDays: 1 },
+      { name: 'Учебная часть', approverDepartment: 'Учебная часть', slaDays: 2 },
+      { name: 'Студенческое МФЦ / печать', approverDepartment: 'Студенческое МФЦ', slaDays: 1 },
     ],
   },
   {
@@ -99,7 +99,7 @@ const TYPES: SeedType[] = [
       { key: 'comment', label: 'Комментарий', type: 'TEXTAREA', required: false, maxLength: 1000 },
     ],
     route: [
-      { name: 'Деканат', approverDepartment: 'Деканат', slaDays: 3 },
+      { name: 'Учебная часть', approverDepartment: 'Учебная часть', slaDays: 3 },
       { name: 'Комиссия по заселению', approverDepartment: 'Комиссия по заселению', slaDays: 10 },
     ],
   },
@@ -113,9 +113,9 @@ const TYPES: SeedType[] = [
       { key: 'photo', label: 'Фотография', type: 'FILE', required: true, accept: ['jpg', 'jpeg', 'png'], maxSizeMb: 10 },
     ],
     route: [
-      { name: 'Деканат', approverDepartment: 'Деканат', slaDays: 2 },
+      { name: 'Учебная часть', approverDepartment: 'Учебная часть', slaDays: 2 },
       { name: 'Отдел кадров студентов', approverDepartment: 'Отдел кадров студентов', slaDays: 3 },
-      { name: 'Печать', approverDepartment: 'Канцелярия', slaDays: 2 },
+      { name: 'Печать', approverDepartment: 'Студенческое МФЦ', slaDays: 2 },
     ],
   },
   {
@@ -163,7 +163,7 @@ const TYPES: SeedType[] = [
       { name: 'Бухгалтерия', approverDepartment: 'Бухгалтерия', slaDays: 3, parallelGroup: 1 },
       { name: 'Военно-учётный стол', approverDepartment: 'Отдел кадров студентов', slaDays: 3, parallelGroup: 1 },
       { name: 'Спортклуб', approverDepartment: 'Профком', slaDays: 2, parallelGroup: 1 },
-      { name: 'Деканат — закрытие обходного', approverDepartment: 'Деканат', slaDays: 2 },
+      { name: 'Учебная часть — закрытие обходного', approverDepartment: 'Учебная часть', slaDays: 2 },
     ],
   },
 ];
